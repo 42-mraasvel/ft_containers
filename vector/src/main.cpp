@@ -9,8 +9,12 @@ typedef ft::vector<int> IntVec;
 
 class TestClass {
 public:
+	TestClass()
+		: n(0) {}
 	TestClass(int n)
 		: n(n) {}
+	TestClass(const TestClass& from)
+		: n(from.n) {}
 	~TestClass() {
 		std::cout << "TEST(" << n << ")" << std::endl;
 	}
@@ -24,11 +28,12 @@ void PrintType(const std::type_info& ti) {
 
 #ifndef DEBUG
 int main() {
-	std::vector<TestClass> v;
+	ft::vector<TestClass> v(2, TestClass(5));
+	// std::vector<TestClass> v;
 
-	for (int i(0); i < 2; ++i) {
-		v.push_back(TestClass(i));
-	}
+	// for (int i(0); i < 2; ++i) {
+	// 	v.push_back(TestClass(i));
+	// }
 	std::cout << std::endl;
 	return 0;
 }
