@@ -1,14 +1,17 @@
 TODO
 
-	Make list of all vector methods to implement
+	Seperate list of functions/methods/things : cross off as you make them
 	Copy tests from cplusplus.com and put them in Catch
+
+	Implement methods 1 by 1 (order of required for testing)
 	Implement iterators
 	Implement the other required reimplementations
 	Implement utils
+	Implement comparison operators and swap? (for vector)
+
 	Clean up all vector methods and class, small functions etc
 
-	learncpp.com 8.x finish!
-	read NF
+	Implement other containers
 
 REIMPLEMENT:
 

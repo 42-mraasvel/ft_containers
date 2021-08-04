@@ -1,0 +1,12 @@
+MEMBER TYPES LEFT:
+
+	iterator
+	const_iterator
+	reverse_iterator
+	const_reverse_iterator
+	typedef ptrdiff_t difference_type; // iterator_traits<iterator>::difference_type
+
+MEMBER FUNCTIONS LEFT:
+
+	Fill constructor
+	NEED: Indexing operator

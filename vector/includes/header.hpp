@@ -1,10 +1,10 @@
 #ifndef HEADER_HPP
 # define HEADER_HPP
 
+#include <iostream>
 #include "proto.hpp"
 #include "settings.hpp"
 #include "vector.hpp"
-#include <iostream>
 #include <vector>
 #include <typeinfo>
 
