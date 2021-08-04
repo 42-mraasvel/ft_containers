@@ -10,7 +10,7 @@ LDIR := libs
 
 BREWIDIR := $(HOME)/.brew/include
 ifdef DEBUG
-	NAME := catch_build
+	NAME := catch_build.exe
 	ODIR := test_obj
 endif
 
@@ -28,7 +28,8 @@ CXXFLAGS = -Wall -Wextra -Werror
 
 # Optional Flags
 UNUSED_FLAGS := -Wno-unused -Wno-unused-parameter
-CXXFLAGS += $(UNUSED_FLAGS)
+SANITIZER_FLAGS := -g3 -fsanitize=address
+CXXFLAGS += $(UNUSED_FLAGS) $(SANITIZER_FLAGS)
 
 # FOR CATCH
 CATCH_DEFINE = CATCH_TEST_ENABLED
@@ -43,7 +44,7 @@ endif
 ifdef DEBUG
 	CXXFLAGS += -std=c++11 -pedantic -g3 -D$(CATCH_DEFINE)
 else
-	CXXFLAGS += -std=c++98 -pedantic -g3
+	CXXFLAGS += -std=c++98 -pedantic
 endif
 
 

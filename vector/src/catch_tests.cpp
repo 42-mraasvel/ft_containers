@@ -5,7 +5,7 @@
 #include "catch2/catch.hpp"
 
 TEST_CASE("ft vector testing", "[vector]") {
-	REQUIRE(1 == 1);
+	REQUIRE(resize_test());
 }
 
 #endif
