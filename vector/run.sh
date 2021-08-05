@@ -5,5 +5,5 @@ if [ "$1" == "catch" ]; then
 		make catch && ./catch_build.exe
 	fi
 else
-	make > /dev/null && ./a.out
+	make && ./a.out
 fi
