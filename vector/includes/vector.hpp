@@ -12,6 +12,7 @@ Resources:
 # include "utils.hpp"
 
 # include <memory> // std::allocator
+# include <stdexcept> // std::out_of_range
 # ifdef __linux__
 # include <cstddef> // size_t
 # endif /* __linux__ */
@@ -61,8 +62,12 @@ public:
 	// template <class InputIterator>
 	// vector(InputIterator first, InputIterator last,
 	// 		const allocator_type& alloc = allocator_type()) {}
+
 	// Copy
-	vector(const vector& x);
+	vector(const vector& x)
+	: _alloc(x._alloc), _capacity(0), _size(0), _table(NULL) {
+		*this = x;
+	}
 
 /* Destructor */
 	~vector() {
@@ -70,6 +75,19 @@ public:
 			_alloc.destroy(_table + i);
 		}
 		_alloc.deallocate(_table, capacity());
+	}
+
+/* Assignment Operator */
+	vector<value_type, allocator_type>& operator=(const vector<value_type>& x) {
+		if (this == &x)
+			return *this;
+
+		clear();
+		reserve(x.size());
+		_size = x.size();
+		for (size_type i = 0; i < _size; ++i)
+			_alloc.construct(_table + i, x[i]);
+		return *this;
 	}
 
 /* Iterators! TODO */
@@ -90,7 +108,23 @@ public:
 		return _alloc.max_size();
 	}
 
-	void resize (size_type n, value_type val = value_type());
+	void resize (size_type n, value_type val = value_type()) {
+		if (n < size()) {
+			for (size_type i = size(); i > n; --i) {
+				_alloc.destroy(_table + i);
+			}
+			_size = n;
+			return;
+		}
+
+		if (capacity() * 2 < n) {
+			reserve(n);
+		}
+
+		for (size_type i = size(); i < n; ++i) {
+			push_back(val);
+		}
+	}
 
 	size_type capacity() const {
 		return _capacity;
@@ -100,7 +134,18 @@ public:
 		return size() == 0;
 	}
 
-	void reserve (size_type n);
+	void reserve (size_type n) {
+		if (n <= capacity()) {
+			return;
+		}
+
+		pointer temp = _alloc.allocate(n);
+		ft::copy(_table, _table + size(), temp);
+		if (_table)
+			_alloc.deallocate(_table, capacity());
+		_capacity = n;
+		_table = temp;
+	}
 
 /* Element access */
 	reference operator[] (size_type n) {
@@ -112,31 +157,66 @@ public:
 	}
 
 
-	reference at(size_type n);
-	const_reference at(size_type n) const;
+	reference at(size_type n) {
+		if (n >= _size) {
+			throw std::out_of_range("vector");
+		}
+		return _table[n];
+	}
 
-	reference front();
-	const_reference front() const;
+	const_reference at(size_type n) const {
+		if (n >= _size) {
+			throw std::out_of_range("vector");
+		}
+		return _table[n];
+	}
 
-	reference back();
-	const_reference back() const;
+	reference front() {
+		return _table[0];
+	}
+
+	const_reference front() const {
+		return _table[0];
+	}
+
+	reference back() {
+		return _table[_size - 1];
+	}
+
+	const_reference back() const {
+		return _table[_size - 1];
+	}
 
 /* Modifiers */
 	// Range
 	template <class InputIterator>
-	void assign (InputIterator first, InputIterator last);
+	void assign(InputIterator first, InputIterator last) {
+		clear();
+		reserve(ft::distance(first, last));
+		ft::copy(first, last, _table);
+	}
 
 	// Fill
-	void assign (size_type n, const value_type& val);
+	void assign(size_type n, const value_type& val) {
+		clear();
+		reserve(n);
+		_size = n;
+		for (size_type i = 0; i < n; ++i) {
+			_alloc.construct(_table + i, val);
+		}
+	}
 
-	void push_back (const value_type& val) {
-		_table[_size++] = val;
+	void push_back(const value_type& val) {
+		_ensure_capacity();
+		_table[_size] = val;
+		++_size;
 	}
 
 	void pop_back() {
 		if (size() == 0)
 			return;
-		_alloc.destroy(_table[_size--]);
+		_alloc.destroy(_table[_size]);
+		--_size;
 	}
 
 	// Single Element
@@ -152,12 +232,31 @@ public:
 	// iterator erase (iterator position);
 	// iterator erase (iterator first, iterator last);
 
-	void swap (vector& x);
+	void swap(vector& x);
 
-	void clear();
+	void clear() {
+		for (size_type i = 0; i < size(); ++i) {
+			_alloc.destroy(_table + i);
+		}
+		_size = 0;
+	}
 
 /* Allocator */
 	allocator_type get_allocator() const;
+
+private:
+
+	void _ensure_capacity() {
+		if (size() < capacity()) {
+			return;
+		}
+
+		if (capacity() == 0) {
+			reserve(1);
+		} else {
+			reserve(capacity() * 2);
+		}
+	}
 
 
 private:

@@ -4,4 +4,4 @@ a.out*
 *.o
 *.a
 *.d
-*.sh
+*.exe

@@ -6,6 +6,16 @@ void PrintCapSize(const C& container) {
 	std::cout << "CAP(" << container.capacity() << ')' << std::endl;
 }
 
+template <typename C>
+void PrintContainer(const C& container) {
+	PrintCapSize(container);
+	std::cout << "contains:";
+	for (typename C::size_type i = 0; i < container.size(); ++i) {
+		std::cout << ' ' << container[i];
+	}
+	std::cout << '$' << std::endl;
+}
+
 class LeakingClass {
 public:
 	LeakingClass() {
@@ -35,7 +45,12 @@ private:
 #ifndef CATCH_TEST_ENABLED
 int main() {
 
-	ft::vector<LeakingClass> v(1);
+	ft::vector<int> v(1000, 10);
+
+	PrintCapSize(v);
+	v.assign(2, 2);
+	// v = ft::vector<int>(2, 2);
+	PrintCapSize(v);
 
 	return 0;
 }

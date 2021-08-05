@@ -17,10 +17,10 @@ ifdef DEBUG
 	DDIR := dep/test_dep
 	ifdef $(STD_VECTOR_TEST_DEFINE)
 		NAME := catch_build_std.exe
-		ODIR := test_obj2
+		ODIR := obj/test_obj2
 	else
 		NAME := catch_build.exe
-		ODIR := test_obj
+		ODIR := obj/test_obj
 	endif
 endif
 
@@ -40,6 +40,7 @@ CXXFLAGS = -Wall -Wextra -Werror
 UNUSED_FLAGS := -Wno-unused -Wno-unused-parameter
 SANITIZER_FLAGS := -fsanitize=address
 CXXFLAGS += $(UNUSED_FLAGS) -g3
+# CXXFLAGS += $(SANITIZER_FLAGS)
 
 
 ifeq ($(shell uname -s),Linux)
@@ -75,7 +76,7 @@ $(DDIR)/%.d: $(SDIR)/%.cpp
 	@mkdir -p $(@D)
 	@$(CXX) $< -MM -MF $@ -MT $(ODIR)/$*.o $(IFLAGS)
 
-catch_tests.cpp: vector.hpp
+catch_tests.o: vector.hpp
 
 # Cleanup
 .PHONY: clean fclean re cleanall

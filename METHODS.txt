@@ -8,5 +8,9 @@ MEMBER TYPES LEFT:
 
 MEMBER FUNCTIONS LEFT:
 
-	Fill constructor
-	NEED: Indexing operator
+	assign
+	swap
+	get_allocator
+
+	non-member functions
+
