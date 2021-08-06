@@ -8,19 +8,24 @@ DDIR := dep
 IDIR := includes
 LDIR := libs
 
+ifeq ($(shell uname),Darwin)
+	DEBUG_SYM = *.dSYM
+endif
+
 # FOR CATCH
 CATCH_DEFINE = CATCH_TEST_ENABLED
 STD_VECTOR_TEST_DEFINE = STD_VECTOR_TESTS
 
 BREWIDIR := $(HOME)/.brew/include
 ifdef DEBUG
-	DDIR := dep/test_dep
 	ifdef $(STD_VECTOR_TEST_DEFINE)
 		NAME := catch_build_std.exe
 		ODIR := obj/test_obj2
+		DDIR := dep/test_obj2
 	else
 		NAME := catch_build.exe
 		ODIR := obj/test_obj
+		DDIR := dep/test_obj
 	endif
 endif
 
@@ -76,7 +81,7 @@ $(DDIR)/%.d: $(SDIR)/%.cpp
 	@mkdir -p $(@D)
 	@$(CXX) $< -MM -MF $@ -MT $(ODIR)/$*.o $(IFLAGS)
 
-catch_tests.o: vector.hpp
+obj/test_obj/catch_tests.o: includes/vector.hpp
 
 # Cleanup
 .PHONY: clean fclean re cleanall
@@ -84,13 +89,15 @@ clean:
 	$(RM) -r $(ODIR)
 	$(RM) -r $(DDIR)
 ifndef DEBUG
-fclean: clean
+fclean:
 	$(MAKE) fclean DEBUG=1
 	$(MAKE) fclean DEBUG=1 $(STD_VECTOR_TEST_DEFINE)=1
+	$(MAKE) clean
 	$(RM) $(NAME)
 else
 fclean: clean
 	$(RM) $(NAME)
+	$(RM) -r $(DEBUG_SYM)
 endif
 re: fclean
 	$(MAKE) all

@@ -1,4 +1,3 @@
-
 #ifdef CATCH_TEST_ENABLED
 
 #include "settings.hpp"
@@ -7,6 +6,8 @@
 #include "catch2/catch.hpp"
 #include "vector.hpp"
 #include <stdexcept>
+#include <memory>
+#include <typeinfo>
 
 #include <iostream>
 
@@ -39,6 +40,19 @@ TEST_CASE("vector fill constructor", "[vector]") {
 
 /* Destructor */
 
+TEST_CASE("vector destructor", "[vector]") {
+	VectorInt_t v;
+
+	{
+		VectorInt_t v2;
+		v2 = v;
+		VectorInt_t v3(v);
+	}
+
+	VectorInt_t* vptr = new VectorInt_t();
+	delete vptr;
+}
+
 /* Assignment Opeartor */
 
 TEST_CASE("vector assignment operator= #1", "[vector]") {
@@ -70,11 +84,17 @@ TEST_CASE("vector assignment operator= #2", "[vector]") {
 /* Capacity */
 
 TEST_CASE("vector size", "[vector]") {
+	VectorInt_t v;
 
+	REQUIRE(v.size() == 0);
+	v.push_back(1);
+	REQUIRE(v.size() == 1);
 }
 
 TEST_CASE("vector max_size", "[vector]") {
-
+	VectorInt_t v;
+	std::allocator<int> alloc;
+	REQUIRE(v.max_size() == alloc.max_size());
 }
 
 TEST_CASE("vector resize #1", "[vector]") {
@@ -106,6 +126,13 @@ TEST_CASE("vector resize #2", "[vector]") {
 
 
 TEST_CASE("vector capacity", "[vector]") {
+	VectorInt_t v;
+
+	REQUIRE(v.capacity() == 0);
+	v.reserve(10);
+	REQUIRE(v.capacity() == 10);
+	v.reserve(5);
+	REQUIRE(v.capacity() == 10);
 }
 
 TEST_CASE("vector empty", "[vector]") {
@@ -245,7 +272,17 @@ TEST_CASE("vector push_back #2", "[vector]") {
 }
 
 TEST_CASE("vector pop_back", "[vector]") {
+	VectorInt_t v;
 
+	v.push_back(10);
+	REQUIRE(v.size() == 1);
+	v.pop_back();
+	REQUIRE(v.size() == 0);
+	v.push_back(1);
+	v.push_back(2);
+	REQUIRE(v.back() == 2);
+	v.pop_back();
+	REQUIRE(v.back() == 1);
 }
 
 TEST_CASE("vector insert", "[vector]") {
@@ -277,9 +314,14 @@ TEST_CASE("vector clear", "[vector]") {
 }
 
 /* Allocator */
-
 TEST_CASE("vector get_allocator", "[vector]") {
+	ft::vector<int> v;
+	std::vector<int> v2;
 
+	const std::type_info& ti = typeid(v.get_allocator());
+	const std::type_info& expected = typeid(v2.get_allocator());
+
+	REQUIRE(ti.name() == expected.name());
 }
 
 /* Non-member function overloads */
@@ -288,4 +330,4 @@ TEST_CASE("vector get_allocator", "[vector]") {
 
 /* Swap */
 
-#endif
+#endif /* CATCH_TEST_ENABLED */

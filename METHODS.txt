@@ -11,24 +11,9 @@ MEMBER FUNCTIONS LEFT:
 	ITERATOR constructor
 	ITERATOR assign
 
-	get_allocator
-
 	non-member functions
 
 TESTS:
 
-	size
-	max_size
-	capacity
-
-	destructor
-
-	assign_iterator
-
-	pop_back
-	insert
-	erase
-
-	get_allocator
 
 	non-member stuff

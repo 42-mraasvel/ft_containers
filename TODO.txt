@@ -1,11 +1,7 @@
 TODO
 
-	read/learn about SFINAE
-	InputIterator template constructors, how does vector solve this problem?
+	SFINAE can be used to check type information during compile time, for example if a type belongs to an iterator class (enable_if)
 
-	Copy tests from cplusplus.com and put them in Catch
-
-	Implement methods 1 by 1 (order of required for testing)
 	Implement iterators
 	Implement the other required reimplementations
 	Implement utils
@@ -24,11 +20,6 @@ REIMPLEMENT:
 	equal/lexicographical compare
 	std::pair
 	std::make_pair
-
-Questions:
-
-	Do you implement new iterators for each class, do you have a base class from which you derive iterators?
-	Do you have to allocate at least 2 extra members in a vector, so that the iterator can point to the empty start/end, or can they point just beyond the memory area with no issues?
 
 Iterators:
 

@@ -212,9 +212,7 @@ public:
 	}
 
 	void pop_back() {
-		if (size() == 0)
-			return;
-		_alloc.destroy(_table[_size]);
+		_alloc.destroy(_table + _size);
 		--_size;
 	}
 
@@ -246,10 +244,12 @@ public:
 	}
 
 /* Allocator */
-	allocator_type get_allocator() const;
+	allocator_type get_allocator() const {
+		return _alloc;
+	}
 
 private:
-
+/* Extra Functions / Utilities */
 	void _ensure_capacity() {
 		if (size() < capacity()) {
 			return;
@@ -264,13 +264,14 @@ private:
 
 
 private:
-
+/* Attributes */
 	allocator_type _alloc;
 	size_type _capacity;
 	size_type _size;
 	pointer _table;
-
 };
+
+/* Non-member function overloads */
 
 template <class T, class Alloc>
 bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
@@ -295,6 +296,13 @@ bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
 
 template <class T, class Alloc>
 bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
+
+
+template <class T, class Alloc>
+void swap (vector<T, Alloc>& x, vector<T, Alloc>& y) {
+	x.swap(y);
+}
+
 
 }
 
