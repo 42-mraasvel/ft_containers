@@ -1,6 +1,8 @@
 TODO
 
-	Seperate list of functions/methods/things : cross off as you make them
+	read/learn about SFINAE
+	InputIterator template constructors, how does vector solve this problem?
+
 	Copy tests from cplusplus.com and put them in Catch
 
 	Implement methods 1 by 1 (order of required for testing)

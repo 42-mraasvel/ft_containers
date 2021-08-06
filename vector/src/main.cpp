@@ -4,6 +4,7 @@ template <typename C>
 void PrintCapSize(const C& container) {
 	std::cout << "SIZE(" << container.size() << ')' << std::endl;
 	std::cout << "CAP(" << container.capacity() << ')' << std::endl;
+	std::cout << std::endl;
 }
 
 template <typename C>
@@ -46,11 +47,14 @@ private:
 int main() {
 
 	ft::vector<int> v(1000, 10);
+	ft::vector<int> v2(10, 1000);
 
 	PrintCapSize(v);
-	v.assign(2, 2);
-	// v = ft::vector<int>(2, 2);
+	PrintCapSize(v2);
+
+	v.swap(v2);
 	PrintCapSize(v);
+	PrintCapSize(v2);
 
 	return 0;
 }

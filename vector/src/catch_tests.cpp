@@ -69,10 +69,12 @@ TEST_CASE("vector assignment operator= #2", "[vector]") {
 
 /* Capacity */
 
-TEST_CASE("vector empty", "[vector]") {
-	VectorInt_t v;
-	REQUIRE(v.size() == 0);
-	REQUIRE(v.empty());
+TEST_CASE("vector size", "[vector]") {
+
+}
+
+TEST_CASE("vector max_size", "[vector]") {
+
 }
 
 TEST_CASE("vector resize #1", "[vector]") {
@@ -100,6 +102,16 @@ TEST_CASE("vector resize #2", "[vector]") {
 	v.resize(1000);
 	REQUIRE(v.size() == 1000);
 	REQUIRE(v.capacity() == 1000);
+}
+
+
+TEST_CASE("vector capacity", "[vector]") {
+}
+
+TEST_CASE("vector empty", "[vector]") {
+	VectorInt_t v;
+	REQUIRE(v.size() == 0);
+	REQUIRE(v.empty());
 }
 
 TEST_CASE("vector reserve", "[vector]") {
@@ -185,6 +197,31 @@ TEST_CASE("vector back", "[vector]") {
 
 /* Modifiers */
 
+TEST_CASE("vector assign fill", "[vector]") {
+	VectorInt_t v;
+	v.assign(7, 100);
+	REQUIRE(v.size() == 7);
+	REQUIRE(v.capacity() == 7);
+	for (VectorInt_t::size_type i = 0; i < v.size(); ++i) {
+		REQUIRE(v[i] == 100);
+	}
+
+	VectorInt_t v2(100);
+	v2.assign(7, 100);
+	REQUIRE(v2.size() == 7);
+	REQUIRE(v2.capacity() == 100);
+
+	VectorInt_t v3(3);
+	v3.assign(7, 100);
+	REQUIRE(v3.size() == 7);
+	REQUIRE(v3.capacity() == 7);
+
+	VectorInt_t v4(4);
+	v4.assign(7, 100);
+	REQUIRE(v4.size() == 7);
+	REQUIRE(v4.capacity() == 7);
+}
+
 TEST_CASE("vector push_back #1", "[vector]") {
 	VectorInt_t v;
 	REQUIRE(v.size() == 0);
@@ -207,6 +244,29 @@ TEST_CASE("vector push_back #2", "[vector]") {
 	}
 }
 
+TEST_CASE("vector pop_back", "[vector]") {
+
+}
+
+TEST_CASE("vector insert", "[vector]") {
+
+}
+
+TEST_CASE("vector erase", "[vector]") {
+
+}
+
+TEST_CASE("vector swap", "[vector]") {
+	VectorInt_t v(3, 100);
+	VectorInt_t v2(5, 200);
+
+	v.swap(v2);
+	REQUIRE(v.size() == 5);
+	REQUIRE(v.capacity() == 5);
+	REQUIRE(v2.size() == 3);
+	REQUIRE(v2.capacity() == 3);
+}
+
 TEST_CASE("vector clear", "[vector]") {
 	VectorInt_t v(10);
 	REQUIRE(v.size() == 10);
@@ -218,5 +278,14 @@ TEST_CASE("vector clear", "[vector]") {
 
 /* Allocator */
 
+TEST_CASE("vector get_allocator", "[vector]") {
+
+}
+
+/* Non-member function overloads */
+
+/* Relational Operators */
+
+/* Swap */
 
 #endif

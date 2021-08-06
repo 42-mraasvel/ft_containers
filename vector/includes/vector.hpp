@@ -51,8 +51,6 @@ public:
 					const allocator_type& alloc = allocator_type())
 	: _alloc(alloc), _capacity(n), _size(n) {
 		_table = _alloc.allocate(n);
-
-		// Construct all values using _alloc.construct(_table[i], val);
 		for (size_type i = 0; i < size(); ++i) {
 			_alloc.construct(_table + i, val);
 		}
@@ -82,6 +80,7 @@ public:
 		if (this == &x)
 			return *this;
 
+		// Use the assign range function?
 		clear();
 		reserve(x.size());
 		_size = x.size();
@@ -189,12 +188,12 @@ public:
 
 /* Modifiers */
 	// Range
-	template <class InputIterator>
-	void assign(InputIterator first, InputIterator last) {
-		clear();
-		reserve(ft::distance(first, last));
-		ft::copy(first, last, _table);
-	}
+	// template <class InputIterator>
+	// void assign(InputIterator first, InputIterator last) {
+	// 	clear();
+	// 	reserve(ft::distance(first, last));
+	// 	ft::copy(first, last, _table);
+	// }
 
 	// Fill
 	void assign(size_type n, const value_type& val) {
@@ -232,7 +231,12 @@ public:
 	// iterator erase (iterator position);
 	// iterator erase (iterator first, iterator last);
 
-	void swap(vector& x);
+	void swap(vector& x) {
+		ft::swap(_alloc, x._alloc);
+		ft::swap(_capacity, x._capacity);
+		ft::swap(_size, x._size);
+		ft::swap(_table, x._table);
+	}
 
 	void clear() {
 		for (size_type i = 0; i < size(); ++i) {
