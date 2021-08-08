@@ -1,8 +1,7 @@
 TODO
 
-	SFINAE can be used to check type information during compile time, for example if a type belongs to an iterator class (enable_if)
-
 	Implement iterators
+	SFINAE can be used to check type information during compile time, for example if a type belongs to an iterator class (enable_if)
 	Implement the other required reimplementations
 	Implement utils
 	Implement comparison operators and swap? (for vector)

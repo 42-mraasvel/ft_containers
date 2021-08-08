@@ -8,4 +8,8 @@
 #include <vector>
 #include <typeinfo>
 
+#include "iterator_traits.hpp"
+#include "reverse_iterator.hpp"
+#include <iterator>
+
 #endif /* HEADER_HPP */

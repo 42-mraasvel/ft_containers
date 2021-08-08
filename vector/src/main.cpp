@@ -9,12 +9,12 @@ void PrintCapSize(const C& container) {
 
 template <typename C>
 void PrintContainer(const C& container) {
-	PrintCapSize(container);
 	std::cout << "contains:";
 	for (typename C::size_type i = 0; i < container.size(); ++i) {
 		std::cout << ' ' << container[i];
 	}
 	std::cout << '$' << std::endl;
+	PrintCapSize(container);
 }
 
 class LeakingClass {
@@ -23,8 +23,8 @@ public:
 		p = new int;
 	}
 
-	LeakingClass(const LeakingClass& from) {
-		p = NULL;
+	LeakingClass(const LeakingClass& from)
+	: p(NULL) {
 		*this = from;
 	}
 
@@ -33,6 +33,7 @@ public:
 		if (p)
 			delete p;
 		p = new int(*rhs.p);
+		// p = rhs.p;
 		return *this;
 	}
 
@@ -43,18 +44,25 @@ private:
 	int* p;
 };
 
+class Lmao : public std::iterator_traits<int*> {
+
+};
+
 #ifndef CATCH_TEST_ENABLED
 int main() {
 
-	ft::vector<int> v(1000, 10);
-	ft::vector<int> v2(10, 1000);
+	ft::vector<int> v;
 
-	PrintCapSize(v);
-	PrintCapSize(v2);
+	for (int i = 0; i < 5; ++i) {
+		v.push_back(i + 1);
+	}
 
-	v.swap(v2);
-	PrintCapSize(v);
-	PrintCapSize(v2);
+	PrintContainer(v);
+
+	ft::vector<int> v2(v.begin(), v.end());
+	ft::vector<int> v3(1, 2);
+
+	PrintContainer(v2);
 
 	return 0;
 }

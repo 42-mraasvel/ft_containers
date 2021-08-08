@@ -112,7 +112,6 @@ TEST_CASE("vector resize #1", "[vector]") {
 
 	v.resize(101);
 	REQUIRE(v.size() == 101);
-	REQUIRE(v.capacity() == 200);
 }
 
 TEST_CASE("vector resize #2", "[vector]") {

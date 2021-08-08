@@ -10,6 +10,7 @@ Resources:
 */
 
 # include "utils.hpp"
+# include "reverse_iterator.hpp"
 
 # include <memory> // std::allocator
 # include <stdexcept> // std::out_of_range
@@ -31,10 +32,10 @@ public:
 	typedef typename allocator_type::pointer pointer;
 	typedef typename allocator_type::const_pointer const_pointer;
 
-	// iterator
-	// const_iterator
-	// reverse_iterator
-	// const_reverse_iterator
+	typedef pointer iterator;
+	typedef const_pointer const_iterator;
+	typedef ft::reverse_iterator<iterator> reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
 	typedef ptrdiff_t difference_type; // iterator_traits<iterator>::difference_type
 	typedef size_t size_type;
@@ -50,6 +51,7 @@ public:
 	explicit vector(size_type n, const value_type& val = value_type(),
 					const allocator_type& alloc = allocator_type())
 	: _alloc(alloc), _capacity(n), _size(n) {
+		std::cout << "FT::VECTOR: FILL Constructor" << std::endl;
 		_table = _alloc.allocate(n);
 		for (size_type i = 0; i < size(); ++i) {
 			_alloc.construct(_table + i, val);
@@ -57,9 +59,17 @@ public:
 	}
 
 	// Range: For some reason this one is called with: v(1, 2) (2 ints)??
-	// template <class InputIterator>
-	// vector(InputIterator first, InputIterator last,
-	// 		const allocator_type& alloc = allocator_type()) {}
+	template <class InputIterator>
+	vector(InputIterator first, InputIterator last,
+			const allocator_type& alloc = allocator_type())
+	: _alloc(alloc), _capacity(0), _size(0), _table(NULL) {
+
+		std::cout << "FT::VECTOR: Range Constructor" << std::endl;
+		size_type dist = ft::distance(first, last);
+		reserve(dist);
+		_size = dist;
+		ft::copy(first, last, begin());
+	}
 
 	// Copy
 	vector(const vector& x)
@@ -90,13 +100,21 @@ public:
 	}
 
 /* Iterators! TODO */
-	value_type* begin() {
+	iterator begin() {
 		return _table;
 	}
 
-	value_type* end() {
+	iterator end() {
 		return _table + size();
 	}
+
+	// reverse_iterator rbegin() {
+	// 	return reverse_iterator(end());
+	// }
+
+	// reverse_iterator rend() {
+	// 	return reverse_iterator(begin());
+	// }
 
 /* Capacity */
 	size_type size() const {
@@ -107,7 +125,7 @@ public:
 		return _alloc.max_size();
 	}
 
-	void resize (size_type n, value_type val = value_type()) {
+	void resize(size_type n, value_type val = value_type()) {
 		if (n < size()) {
 			for (size_type i = size(); i > n; --i) {
 				_alloc.destroy(_table + i);
@@ -187,6 +205,7 @@ public:
 	}
 
 /* Modifiers */
+	// Don't forget to update size!
 	// Range
 	// template <class InputIterator>
 	// void assign(InputIterator first, InputIterator last) {
