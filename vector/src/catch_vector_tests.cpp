@@ -38,6 +38,17 @@ TEST_CASE("vector fill constructor", "[vector]") {
 	}
 }
 
+TEST_CASE("vector iterator constructor", "[vector]") {
+	VectorInt_t v(5, 100);
+
+	VectorInt_t v2(v.begin(), v.end());
+	REQUIRE(v == v2);
+
+	int table[] = {5,5,5,5,5};
+	VectorInt_t v3(table, table + sizeof(table) / sizeof(int));
+	REQUIRE(v3 == VectorInt_t(5, 5));
+}
+
 /* Destructor */
 
 TEST_CASE("vector destructor", "[vector]") {

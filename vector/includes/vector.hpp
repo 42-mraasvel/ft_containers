@@ -111,6 +111,14 @@ public:
 		return _table + size();
 	}
 
+	const_iterator cbegin() const {
+		return _table;
+	}
+
+	const_iterator cend() const {
+		return _table + size();
+	}
+
 	// reverse_iterator rbegin() {
 	// 	return reverse_iterator(end());
 	// }
@@ -301,7 +309,7 @@ bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
 		return false;
 	}
 
-	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+	return ft::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin());
 }
 
 template <class T, class Alloc>
@@ -321,7 +329,7 @@ bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs);
 
 
 template <class T, class Alloc>
-void swap (vector<T, Alloc>& x, vector<T, Alloc>& y) {
+void swap(vector<T, Alloc>& x, vector<T, Alloc>& y) {
 	x.swap(y);
 }
 

@@ -1,14 +1,8 @@
 TODO
 
-	TESTS:
-		iterator constructor
-		iterator
-
-	equal
-	lexicographical compare
-	std::pair
-	std::make_pair
 	reverse_iterator
+		Test! (use vector!)
+	iterator_traits: check & test
 
 	list vector methods left
 

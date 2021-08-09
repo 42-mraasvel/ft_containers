@@ -37,7 +37,7 @@ HDF := $(shell find $(IDIR) -name "*.hpp" -type f)
 
 # Compilation
 CXX = clang++
-IFLAGS = -I$(IDIR)
+IFLAGS = -I$(IDIR) -I./$(IDIR)/reimplemented
 LFLAGS =
 CXXFLAGS = -Wall -Wextra -Werror
 

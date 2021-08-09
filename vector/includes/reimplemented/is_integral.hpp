@@ -58,7 +58,7 @@ template <> struct is_integral_base <unsigned long>			: public ft::true_type {};
 
 // template <> struct is_integral_base <char16_t>				: public ft::true_type {};
 // template <> struct is_integral_base <char32_t>				: public ft::true_type {};
-// template <> struct is_integral_base <long long int>				: public ft::true_type {};
+// template <> struct is_integral_base <long long int>			: public ft::true_type {};
 // template <> struct is_integral_base <unsigned long long>	: public ft::true_type {};
 
 

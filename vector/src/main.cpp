@@ -48,9 +48,22 @@ class Lmao : public std::iterator_traits<int*> {
 
 };
 
+template <typename T1, typename T2>
+void printPair(ft::pair<T1, T2> p) {
+	std::cout << '|' << p.first << " : " << p.second << '|' << std::endl;
+}
+
 #ifndef CATCH_TEST_ENABLED
 int main() {
 
+	ft::pair<int, std::string> p;
+
+	printPair(p);
+
+	ft::pair<std::string, std::string> p2("ab", "abc");
+	printPair(p2);
+	ft::pair<std::string, std::string> p3(p2);
+	printPair(p3);
 	return 0;
 }
 #endif
