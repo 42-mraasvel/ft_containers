@@ -93,10 +93,6 @@ public:
 		return base()[-n - 1];
 	}
 
-
-
-
-
 private:
 	iterator_type _base;
 };

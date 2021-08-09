@@ -1,9 +1,20 @@
 TODO
 
-	Implement iterators
-	SFINAE can be used to check type information during compile time, for example if a type belongs to an iterator class (enable_if)
+	TESTS:
+		iterator constructor
+		iterator
+
+	equal
+	lexicographical compare
+	std::pair
+	std::make_pair
+	reverse_iterator
+
+	list vector methods left
+
+
 	Implement the other required reimplementations
-	Implement utils
+	Finish vector implementation
 	Implement comparison operators and swap? (for vector)
 
 	Clean up all vector methods and class, small functions etc

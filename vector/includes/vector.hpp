@@ -11,6 +11,9 @@ Resources:
 
 # include "utils.hpp"
 # include "reverse_iterator.hpp"
+# include "enable_if.hpp"
+# include "is_integral.hpp"
+# include "equal.hpp"
 
 # include <memory> // std::allocator
 # include <stdexcept> // std::out_of_range
@@ -51,20 +54,20 @@ public:
 	explicit vector(size_type n, const value_type& val = value_type(),
 					const allocator_type& alloc = allocator_type())
 	: _alloc(alloc), _capacity(n), _size(n) {
-		std::cout << "FT::VECTOR: FILL Constructor" << std::endl;
+
 		_table = _alloc.allocate(n);
 		for (size_type i = 0; i < size(); ++i) {
 			_alloc.construct(_table + i, val);
 		}
 	}
 
-	// Range: For some reason this one is called with: v(1, 2) (2 ints)??
+	// Range: use template enable_if to prevent integrals from calling this
 	template <class InputIterator>
 	vector(InputIterator first, InputIterator last,
-			const allocator_type& alloc = allocator_type())
+			const allocator_type& alloc = allocator_type(),
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true)
 	: _alloc(alloc), _capacity(0), _size(0), _table(NULL) {
 
-		std::cout << "FT::VECTOR: Range Constructor" << std::endl;
 		size_type dist = ft::distance(first, last);
 		reserve(dist);
 		_size = dist;

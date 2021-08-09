@@ -51,19 +51,6 @@ class Lmao : public std::iterator_traits<int*> {
 #ifndef CATCH_TEST_ENABLED
 int main() {
 
-	ft::vector<int> v;
-
-	for (int i = 0; i < 5; ++i) {
-		v.push_back(i + 1);
-	}
-
-	PrintContainer(v);
-
-	ft::vector<int> v2(v.begin(), v.end());
-	ft::vector<int> v3(1, 2);
-
-	PrintContainer(v2);
-
 	return 0;
 }
 #endif

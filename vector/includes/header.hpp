@@ -12,4 +12,8 @@
 #include "reverse_iterator.hpp"
 #include <iterator>
 
+#include "enable_if.hpp"
+#include "equal.hpp"
+#include "is_integral.hpp"
+
 #endif /* HEADER_HPP */
