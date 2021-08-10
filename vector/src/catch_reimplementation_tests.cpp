@@ -1,5 +1,3 @@
-#ifdef CATCH_TEST_ENABLED
-
 #include "settings.hpp"
 #include "catch2/catch.hpp"
 
@@ -11,6 +9,10 @@
 #include "lexicographical_compare.hpp"
 #include "pair.hpp"
 #include "make_pair.hpp"
+#include "reverse_iterator.hpp"
+
+#ifdef CATCH_TEST_ENABLED
+
 
 /*
 **
@@ -138,6 +140,34 @@ TEST_CASE("make pair simple test", "[make_pair]") {
 
 	REQUIRE(p.first == 10);
 	REQUIRE(p.second == static_cast<int>('A'));
+}
+
+/*
+Reverse Iterator
+*/
+
+TEST_CASE("reverse iterator", "[reverse_iterator]") {
+	int table[] = {1, 2, 3, 4, 5};
+
+	NS::reverse_iterator<int*> begin(table + sizeof(table) / sizeof(int));
+	NS::reverse_iterator<int*> end(table);
+
+	REQUIRE(begin - end == -5);
+	REQUIRE(end - begin == 5);
+
+	// Addition and subtraction tests
+	REQUIRE(*(1 + begin) == 4);
+	REQUIRE(*(begin + 1) == 4);
+	REQUIRE(begin[1] == 4);
+	REQUIRE(*(end - 1) == 1);
+
+	int i = 5;
+	while (begin != end) {
+		REQUIRE(*begin++ == i--);
+	}
+	REQUIRE(begin == end);
+	REQUIRE(begin - end == 0);
+	REQUIRE(end - begin == 0);
 }
 
 #endif

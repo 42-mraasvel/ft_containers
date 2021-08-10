@@ -42,17 +42,17 @@ struct remove_cv<volatile T> {
 template <class T>
 struct is_integral_base : public ft::false_type {};
 
-template <> struct is_integral_base <bool>					: public ft::true_type {};
-template <> struct is_integral_base <char>					: public ft::true_type {};
-template <> struct is_integral_base <wchar_t>				: public ft::true_type {};
-template <> struct is_integral_base <signed char>			: public ft::true_type {};
-template <> struct is_integral_base <short>					: public ft::true_type {};
-template <> struct is_integral_base <int>					: public ft::true_type {};
-template <> struct is_integral_base <long>					: public ft::true_type {};
-template <> struct is_integral_base <unsigned char>			: public ft::true_type {};
-template <> struct is_integral_base <unsigned short>		: public ft::true_type {};
-template <> struct is_integral_base <unsigned int>			: public ft::true_type {};
-template <> struct is_integral_base <unsigned long>			: public ft::true_type {};
+template <> struct is_integral_base <bool>			: public ft::true_type {};
+template <> struct is_integral_base <char>			: public ft::true_type {};
+template <> struct is_integral_base <wchar_t>		: public ft::true_type {};
+template <> struct is_integral_base <signed char>	: public ft::true_type {};
+template <> struct is_integral_base <short>			: public ft::true_type {};
+template <> struct is_integral_base <int>			: public ft::true_type {};
+template <> struct is_integral_base <long>			: public ft::true_type {};
+template <> struct is_integral_base <unsigned char>	: public ft::true_type {};
+template <> struct is_integral_base <unsigned short>: public ft::true_type {};
+template <> struct is_integral_base <unsigned int>	: public ft::true_type {};
+template <> struct is_integral_base <unsigned long>	: public ft::true_type {};
 
 /* C++ 11 extension data types */
 

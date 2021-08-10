@@ -1,7 +1,7 @@
 #ifndef ITERATOR_TRAITS_HPP
 # define ITERATOR_TRAITS_HPP
 
-# include "iterator_tags.hpp"
+# include "iterator.hpp"
 
 namespace ft {
 
@@ -28,6 +28,10 @@ public:
 	}
 };
 
+
+/*
+pointer specialization
+*/
 template <class T>
 class iterator_traits<T*> {
 public:
@@ -50,6 +54,10 @@ public:
 	}
 };
 
+
+/*
+const pointer specialization
+*/
 template <class T>
 class iterator_traits<const T*> {
 public:

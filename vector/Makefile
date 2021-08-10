@@ -61,7 +61,7 @@ ifdef DEBUG
 		CXXFLAGS += -D$(STD_VECTOR_TEST_DEFINE)
 	endif
 else
-	CXXFLAGS += -std=c++98 -pedantic
+	# CXXFLAGS += -std=c++98 -pedantic
 endif
 
 

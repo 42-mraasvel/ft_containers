@@ -1,5 +1,3 @@
-#ifdef CATCH_TEST_ENABLED
-
 #include "settings.hpp"
 #include "proto.hpp"
 #include "utils.hpp"
@@ -10,6 +8,9 @@
 #include <typeinfo>
 
 #include <iostream>
+
+#ifdef CATCH_TEST_ENABLED
+
 
 /* Member Types */
 
@@ -47,6 +48,12 @@ TEST_CASE("vector iterator constructor", "[vector]") {
 	int table[] = {5,5,5,5,5};
 	VectorInt_t v3(table, table + sizeof(table) / sizeof(int));
 	REQUIRE(v3 == VectorInt_t(5, 5));
+}
+
+TEST_CASE("vector copy constructor", "[vector]") {
+	VectorInt_t v(5, 100);
+	VectorInt_t v2(v);
+	REQUIRE(v == v2);
 }
 
 /* Destructor */
@@ -91,6 +98,53 @@ TEST_CASE("vector assignment operator= #2", "[vector]") {
 }
 
 /* Iterators */
+
+TEST_CASE("vector iterator assignments", "[vector]") {
+	VectorInt_t v(5, 5);
+	const VectorInt_t v2(5, 5);
+
+	VectorInt_t::iterator it = v.begin();
+	VectorInt_t::const_iterator itc = v2.begin();
+	VectorInt_t::const_iterator itc2 = v.begin();
+
+	VectorInt_t::iterator e_it = v.end();
+	VectorInt_t::const_iterator e_itc = v2.end();
+	VectorInt_t::const_iterator e_itc2 = v.end();
+
+	REQUIRE(NS::distance(it, e_it) == static_cast<long>(v.size()));
+	REQUIRE(NS::distance(itc, e_itc) == static_cast<long>(v.size()));
+	REQUIRE(it == itc2);
+	REQUIRE(it != itc);
+}
+
+TEST_CASE("vector reverse iterator", "[vector]") {
+	VectorInt_t v;
+	for (int i = 0; i < 5; ++i) {
+		v.push_back(i);
+	}
+	v.push_back(42);
+
+	VectorInt_t::reverse_iterator it = v.rbegin();
+	REQUIRE(*it == 42);
+	it++;
+
+	int i = 4;
+	while (it != v.rend()) {
+		REQUIRE(*it == i);
+		--i;
+		++it;
+	}
+
+	const VectorInt_t v2(v);
+
+	VectorInt_t::const_reverse_iterator begin_v2 = v2.rbegin();
+	VectorInt_t::const_reverse_iterator end_v2 = v2.rend();
+	VectorInt_t::reverse_iterator begin_v = v.rbegin();
+	REQUIRE(std::equal(begin_v2, end_v2, begin_v));
+
+	REQUIRE(VectorInt_t::const_reverse_iterator(v.rbegin()) == VectorInt_t::reverse_iterator(v.rbegin()));
+
+}
 
 /* Capacity */
 
@@ -257,6 +311,25 @@ TEST_CASE("vector assign fill", "[vector]") {
 	v4.assign(7, 100);
 	REQUIRE(v4.size() == 7);
 	REQUIRE(v4.capacity() == 7);
+}
+
+TEST_CASE("vector assign iterator", "[vector]") {
+	VectorInt_t v;
+
+	v.assign(7, 100);
+	REQUIRE(v.size() == 7);
+	VectorInt_t v2;
+	v2.assign(v.begin(), v.end());
+	REQUIRE(v2.size() == 7);
+	REQUIRE(v == v2);
+
+	VectorInt_t v3;
+	v3.assign(100, 250);
+	REQUIRE(v3.size() == 100);
+	v3.assign(v2.begin(), v2.end());
+	REQUIRE(v3.size() == 7);
+	REQUIRE(v3.capacity() == 100);
+	REQUIRE(v3 == v);
 }
 
 TEST_CASE("vector push_back #1", "[vector]") {

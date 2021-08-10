@@ -1,12 +1,14 @@
 TODO
 
-	reverse_iterator
-		Test! (use vector!)
-	iterator_traits: check & test
+list vector methods left:
 
-	list vector methods left
+	insert
+	erase
+	relational operators
 
+	read resize() documentation, through assignment or construction?
 
+NEXT:
 	Implement the other required reimplementations
 	Finish vector implementation
 	Implement comparison operators and swap? (for vector)

@@ -30,6 +30,7 @@ public:
 /* Member Types */
 	typedef T value_type;
 	typedef Alloc allocator_type;
+
 	typedef typename allocator_type::reference reference;
 	typedef typename allocator_type::const_reference const_reference;
 	typedef typename allocator_type::pointer pointer;
@@ -40,7 +41,7 @@ public:
 	typedef ft::reverse_iterator<iterator> reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-	typedef ptrdiff_t difference_type; // iterator_traits<iterator>::difference_type
+	typedef typename iterator_traits<iterator>::difference_type difference_type;
 	typedef size_t size_type;
 
 public:
@@ -68,10 +69,7 @@ public:
 			typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true)
 	: _alloc(alloc), _capacity(0), _size(0), _table(NULL) {
 
-		size_type dist = ft::distance(first, last);
-		reserve(dist);
-		_size = dist;
-		ft::copy(first, last, begin());
+		assign(first, last);
 	}
 
 	// Copy
@@ -107,25 +105,33 @@ public:
 		return _table;
 	}
 
+	const_iterator begin() const {
+		return _table;
+	}
+
 	iterator end() {
 		return _table + size();
 	}
 
-	const_iterator cbegin() const {
-		return _table;
-	}
-
-	const_iterator cend() const {
+	const_iterator end() const {
 		return _table + size();
 	}
 
-	// reverse_iterator rbegin() {
-	// 	return reverse_iterator(end());
-	// }
+	reverse_iterator rbegin() {
+		return reverse_iterator(end());
+	}
 
-	// reverse_iterator rend() {
-	// 	return reverse_iterator(begin());
-	// }
+	const_reverse_iterator rbegin() const {
+		return const_reverse_iterator(end());
+	}
+
+	reverse_iterator rend() {
+		return reverse_iterator(begin());
+	}
+
+	const_reverse_iterator rend() const {
+		return const_reverse_iterator(begin());
+	}
 
 /* Capacity */
 	size_type size() const {
@@ -216,14 +222,20 @@ public:
 	}
 
 /* Modifiers */
-	// Don't forget to update size!
 	// Range
-	// template <class InputIterator>
-	// void assign(InputIterator first, InputIterator last) {
-	// 	clear();
-	// 	reserve(ft::distance(first, last));
-	// 	ft::copy(first, last, _table);
-	// }
+	template <class InputIterator>
+	void assign(InputIterator first, InputIterator last,
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true) {
+
+		clear();
+		size_type dist = ft::distance(first, last);
+		reserve(dist);
+		_size = dist;
+		for (size_type i = 0; i < dist; ++i) {
+			_alloc.construct(_table + i, *first);
+			++first;
+		}
+	}
 
 	// Fill
 	void assign(size_type n, const value_type& val) {
@@ -309,7 +321,7 @@ bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
 		return false;
 	}
 
-	return ft::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin());
+	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
 template <class T, class Alloc>
