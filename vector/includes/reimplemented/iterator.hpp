@@ -2,17 +2,19 @@
 # define ITERATOR_HPP
 
 # include <cstddef>
+# include <iterator>
 
 namespace ft {
 
 /*
-Iterator Tags: iterator_category
+Importing iterator tags to ft namespace
 */
-struct input_iterator_tag {};
-struct output_iterator_tag {};
-struct forward_iterator_tag {};
-struct bidirectional_iterator_tag {};
-struct random_access_iterator_tag {};
+typedef std::input_iterator_tag input_iterator_tag;
+typedef std::output_iterator_tag output_iterator_tag;
+typedef std::forward_iterator_tag forward_iterator_tag;
+typedef std::bidirectional_iterator_tag bidirectional_iterator_tag;
+typedef std::random_access_iterator_tag random_access_iterator_tag;
+
 
 /*
 Iterator base class

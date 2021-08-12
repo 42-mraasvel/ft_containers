@@ -2,11 +2,24 @@ TODO
 
 list vector methods left:
 
+	implement copy_backward
+
 	insert
+		1. insert single position
+		2.
+		3.
 	erase
 	relational operators
 
+	https://www.boost.org/community/generic_programming.html
+
 	read resize() documentation, through assignment or construction?
+	look at tag dispatching
+	iterator constructor: checks iterator_tags
+
+	C++98 standard: look at every function and check construct vs assign differences
+
+	Optimizations using example class, read the outputs of constructors etc and determine how the STL is optimized
 
 NEXT:
 	Implement the other required reimplementations
@@ -16,16 +29,6 @@ NEXT:
 	Clean up all vector methods and class, small functions etc
 
 	Implement other containers
-
-REIMPLEMENT:
-
-	iterators_traits
-	reverse_iterator
-	enable_if
-	is_integral
-	equal/lexicographical compare
-	std::pair
-	std::make_pair
 
 Iterators:
 

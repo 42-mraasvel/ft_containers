@@ -1,6 +1,7 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
+#include <iostream>
 /*
 
 Resources:
@@ -142,7 +143,7 @@ public:
 		return _alloc.max_size();
 	}
 
-	void resize(size_type n, value_type val = value_type()) {
+	void resize(size_type n) {
 		if (n < size()) {
 			for (size_type i = size(); i > n; --i) {
 				_alloc.destroy(_table + i);
@@ -153,10 +154,36 @@ public:
 
 		if (capacity() * 2 < n) {
 			reserve(n);
+		} else {
+			reserve(capacity() * 2);
 		}
 
 		for (size_type i = size(); i < n; ++i) {
-			push_back(val);
+			// _alloc.construct(_table + i, val);
+			_alloc.construct(_table + i);
+			++_size;
+		}
+	}
+
+	void resize(size_type n, const value_type& val) {
+		if (n < size()) {
+			for (size_type i = size(); i > n; --i) {
+				_alloc.destroy(_table + i);
+			}
+			_size = n;
+			return;
+		}
+
+		if (capacity() * 2 < n) {
+			reserve(n);
+		} else {
+			reserve(capacity() * 2);
+		}
+
+		for (size_type i = size(); i < n; ++i) {
+			// _alloc.construct(_table + i, val);
+			_alloc.construct(_table + i, val);
+			++_size;
 		}
 	}
 
@@ -174,9 +201,14 @@ public:
 		}
 
 		pointer temp = _alloc.allocate(n);
-		ft::copy(_table, _table + size(), temp);
-		if (_table)
+		size_type temp_size = size();
+		if (size() > 0)
+		{
+			ft::copy(begin(), end(), temp, _alloc);
+			clear();
+			_size = temp_size;
 			_alloc.deallocate(_table, capacity());
+		}
 		_capacity = n;
 		_table = temp;
 	}
@@ -249,7 +281,7 @@ public:
 
 	void push_back(const value_type& val) {
 		_ensure_capacity();
-		_table[_size] = val;
+		_alloc.construct(_table + _size, val);
 		++_size;
 	}
 
@@ -257,16 +289,149 @@ public:
 		_alloc.destroy(_table + _size);
 		--_size;
 	}
-
 	// Single Element
-	// iterator insert (iterator position, const value_type& val);
+	iterator insert(iterator position, const value_type& val) {
+
+	/*
+		if (not_enough_capacity)
+			reallocate_then_construct_new_table
+		else
+			construct_only_at_end_assign_rest
+	*/
+
+		if (size() >= capacity())
+		{
+			size_type new_capacity;
+			size_type new_size = size() + 1;
+
+			pointer temp;
+			difference_type dist = position - begin();
+			if (capacity() == 0) {
+				temp = _alloc.allocate(1);
+				new_capacity = 1;
+			} else {
+				temp = _alloc.allocate(capacity() * 2);
+				new_capacity = capacity() * 2;
+			}
+			position = begin() + dist;
+
+			/*
+				1. Copy up to position
+				2. Copy position
+				3. Copy everything after position
+			*/
+			size_type i = 0;
+			iterator it;
+
+			for (it = begin(); it != position; ++it) {
+				_alloc.construct(temp + i, *it);
+				++i;
+			}
+
+			_alloc.construct(temp + i, val);
+			++i;
+			while (it != end()) {
+				_alloc.construct(temp + i, *it);
+				++it;
+				++i;
+			}
+			clear();
+			_alloc.deallocate(_table, capacity());
+			_size = new_size;
+			_capacity = new_capacity;
+			_table = temp;
+			return position;
+		}
+		else {
+			reverse_iterator first = rbegin();
+			reverse_iterator last(position);
+
+			_alloc.construct(begin() + size(), back());
+
+			while (first != last - 1) {
+				*first = (first[1]);
+				++first;
+			}
+
+			*position = val;
+			++_size;
+			return position;
+		}
+	}
 
 	// Fill
-	// void insert (iterator position, size_type n, const value_type& val);
+	void insert(iterator position, size_type n, const value_type& val) {
+		if (size() + n > capacity()) {
+			// reallocate and construct new table
+			size_type new_capacity;
+			if (capacity() * 2 >= size() + n) {
+				new_capacity = capacity() * 2;
+			} else {
+				new_capacity = size() + n;
+			}
+
+			pointer temp = _alloc.allocate(new_capacity);
+
+			size_type i = 0;
+			iterator it;
+			for (it = begin(); it != position; ++it) {
+				_alloc.construct(temp + i, *it);
+				++i;
+			}
+
+			for (size_type j = 0; j < n; ++j) {
+				_alloc.construct(temp + i, val);
+				++i;
+			}
+
+			for (; it != end(); ++it) {
+				_alloc.construct(temp + i, *it);
+				++i;
+			}
+
+			size_type new_size = size() + n;
+			clear();
+			_alloc.deallocate(_table, capacity());
+			_table = temp;
+			_capacity = new_capacity;
+			_size = new_size;
+			return;
+
+		} else {
+
+			reverse_iterator input = rbegin();
+			reverse_iterator output = rbegin() - n;
+
+			// move table, construct at end and assign rest
+			for (size_type i = 0; i < n; ++i) {
+				_alloc.construct(&(*output), *input);
+				++input;
+				++output;
+			}
+
+			while (input.base() != position) {
+				*output = *input;
+				++input;
+				++output;
+			}
+
+			for (size_type i = 0; i < n; ++i) {
+				*output = val;
+				++output;
+			}
+
+			while (input != rend()) {
+				*output = *input;
+				++input;
+				++output;
+			}
+			_size = size() + n;
+		}
+	}
 
 	// Range
-	// template <class InputIterator>
-	// void insert (iterator position, InputIterator first, InputIterator last);
+	template <class InputIterator>
+	void insert (iterator position, InputIterator first, InputIterator last) {}
 
 	// iterator erase (iterator position);
 	// iterator erase (iterator first, iterator last);
