@@ -19,7 +19,7 @@ ptrdiff_t distance(InputIterator first, InputIterator last) {
 }
 
 template <class InputIterator, class OutputIterator>
-OutputIterator copy (InputIterator first, InputIterator last, OutputIterator result) {
+OutputIterator copy(InputIterator first, InputIterator last, OutputIterator result) {
 	while (first != last) {
 		*result = *first;
 		++first;
@@ -28,10 +28,31 @@ OutputIterator copy (InputIterator first, InputIterator last, OutputIterator res
 	return result;
 }
 
-template <class InputIterator, class OutputIterator, class Alloc>
-OutputIterator copy(InputIterator first, InputIterator last,
-					OutputIterator result, Alloc& alloc) {
+template <class BidirectionalIterator1, class BidirectionalIterator2>
+BidirectionalIterator2 copy_backward(BidirectionalIterator1 first,
+									BidirectionalIterator1 last,
+									BidirectionalIterator2 result) {
+	while (last != first) {
+		--result;
+		--last;
+		*result = *last;
+	}
+	return result;
+}
 
+template <class ValueType, class OutputIterator, class Alloc>
+OutputIterator construct_uninitialized(OutputIterator result, size_t n,
+									const ValueType& val, Alloc& alloc) {
+	for (size_t i = 0; i < n; ++i) {
+		alloc.construct(&(*result), val);
+		++result;
+	}
+	return result;
+}
+
+template <class InputIterator, class OutputIterator, class Alloc>
+OutputIterator copy_uninitialized(InputIterator first, InputIterator last,
+								OutputIterator result, Alloc& alloc) {
 	while (first != last) {
 		alloc.construct(result, *first);
 		++first;
@@ -45,6 +66,11 @@ void swap (T& a, T& b) {
 	const T tmp(a);
 	a = b;
 	b = tmp;
+}
+
+template <typename T>
+const T& max(const T& a, const T& b) {
+	return a > b ? a : b;
 }
 
 /*

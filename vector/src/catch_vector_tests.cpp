@@ -368,8 +368,54 @@ TEST_CASE("vector pop_back", "[vector]") {
 	REQUIRE(v.back() == 1);
 }
 
-TEST_CASE("vector insert", "[vector]") {
+TEST_CASE("vector insert single element", "[vector]") {
+	VectorInt_t v(5, 10);
 
+	REQUIRE(v.size() == 5);
+	v.insert(v.begin() + 1, 1);
+	REQUIRE(v[1] == 1);
+	REQUIRE(v.size() == 6);
+
+	v.insert(v.end(), 2);
+	REQUIRE(v.back() == 2);
+
+	v.insert(v.begin(), 3);
+	REQUIRE(v.front() == 3);
+}
+
+TEST_CASE("vector insert fill", "[vector]") {
+	VectorInt_t v(5, 10);
+
+	v.insert(v.end(), 10, 42);
+	REQUIRE(v.size() == 15);
+	REQUIRE(v.back() == 42);
+
+	v.insert(v.begin(), 50, 100);
+	REQUIRE(v.size() == 65);
+	REQUIRE(v.front() == 100);
+
+	v.insert(v.begin() + 5, 1000, 1);
+	REQUIRE(v[10] == 1);
+	REQUIRE(v.size() == 1065);
+}
+
+TEST_CASE("vector insert range", "[vector]") {
+	VectorInt_t v(5, 5);
+
+	VectorInt_t v2;
+	v2.push_back(1);
+	v2.push_back(2);
+	v2.push_back(3);
+
+	v.insert(v.begin(), v2.begin(), v2.end());
+	REQUIRE(v[0] == 1);
+	REQUIRE(v[1] == 2);
+	REQUIRE(v[2] == 3);
+	REQUIRE(v.size() == 8);
+	v.insert(v.end(), v2.begin(), v2.end());
+	REQUIRE(v.size() == 11);
+	v.insert(v.begin() + 4, v2.begin(), v2.end());
+	REQUIRE(v.size() == 14);
 }
 
 TEST_CASE("vector erase", "[vector]") {

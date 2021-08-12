@@ -62,6 +62,7 @@ ifdef DEBUG
 	endif
 else
 	# CXXFLAGS += -std=c++98 -pedantic
+	CXXFLAGS += $(SANITIZER_FLAGS)
 endif
 
 

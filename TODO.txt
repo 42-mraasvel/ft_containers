@@ -2,12 +2,6 @@ TODO
 
 list vector methods left:
 
-	implement copy_backward
-
-	insert
-		1. insert single position
-		2.
-		3.
 	erase
 	relational operators
 

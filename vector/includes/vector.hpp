@@ -204,7 +204,7 @@ public:
 		size_type temp_size = size();
 		if (size() > 0)
 		{
-			ft::copy(begin(), end(), temp, _alloc);
+			ft::copy_uninitialized(begin(), end(), temp, _alloc);
 			clear();
 			_size = temp_size;
 			_alloc.deallocate(_table, capacity());
@@ -291,68 +291,27 @@ public:
 	}
 	// Single Element
 	iterator insert(iterator position, const value_type& val) {
-
-	/*
-		if (not_enough_capacity)
-			reallocate_then_construct_new_table
-		else
-			construct_only_at_end_assign_rest
-	*/
-
 		if (size() >= capacity())
 		{
-			size_type new_capacity;
-			size_type new_size = size() + 1;
+			size_type new_capacity = ft::max(capacity() * 2, size() + 1);
+			pointer temp = _allocate(new_capacity);
 
-			pointer temp;
-			difference_type dist = position - begin();
-			if (capacity() == 0) {
-				temp = _alloc.allocate(1);
-				new_capacity = 1;
-			} else {
-				temp = _alloc.allocate(capacity() * 2);
-				new_capacity = capacity() * 2;
-			}
-			position = begin() + dist;
+			pointer next;
+			next = ft::copy_uninitialized(begin(), position, temp, _alloc);
+			*next = val;
+			ft::copy_uninitialized(position, end(), next + 1, _alloc);
 
-			/*
-				1. Copy up to position
-				2. Copy position
-				3. Copy everything after position
-			*/
-			size_type i = 0;
-			iterator it;
-
-			for (it = begin(); it != position; ++it) {
-				_alloc.construct(temp + i, *it);
-				++i;
-			}
-
-			_alloc.construct(temp + i, val);
-			++i;
-			while (it != end()) {
-				_alloc.construct(temp + i, *it);
-				++it;
-				++i;
-			}
-			clear();
-			_alloc.deallocate(_table, capacity());
-			_size = new_size;
-			_capacity = new_capacity;
+			_deallocate();
 			_table = temp;
-			return position;
+			_capacity = new_capacity;
+			_size += 1;
+			return next;
 		}
 		else {
-			reverse_iterator first = rbegin();
-			reverse_iterator last(position);
-
-			_alloc.construct(begin() + size(), back());
-
-			while (first != last - 1) {
-				*first = (first[1]);
-				++first;
+			_alloc.construct(end(), back());
+			if (position + 1 < end()) {
+				ft::copy_backward(position, end() - 1, end());
 			}
-
 			*position = val;
 			++_size;
 			return position;
@@ -363,75 +322,68 @@ public:
 	void insert(iterator position, size_type n, const value_type& val) {
 		if (size() + n > capacity()) {
 			// reallocate and construct new table
-			size_type new_capacity;
-			if (capacity() * 2 >= size() + n) {
-				new_capacity = capacity() * 2;
-			} else {
-				new_capacity = size() + n;
-			}
+			size_type new_capacity = ft::max(capacity() * 2, size() + n);
+			pointer temp = _allocate(new_capacity);
 
-			pointer temp = _alloc.allocate(new_capacity);
+			pointer next;
+			next = ft::copy_uninitialized(begin(), position, temp, _alloc);
+			next = ft::construct_uninitialized(next, n, val, _alloc);
+			ft::copy_uninitialized(position, end(), next, _alloc);
 
-			size_type i = 0;
-			iterator it;
-			for (it = begin(); it != position; ++it) {
-				_alloc.construct(temp + i, *it);
-				++i;
-			}
-
-			for (size_type j = 0; j < n; ++j) {
-				_alloc.construct(temp + i, val);
-				++i;
-			}
-
-			for (; it != end(); ++it) {
-				_alloc.construct(temp + i, *it);
-				++i;
-			}
-
-			size_type new_size = size() + n;
-			clear();
-			_alloc.deallocate(_table, capacity());
+			_deallocate();
 			_table = temp;
 			_capacity = new_capacity;
-			_size = new_size;
-			return;
+			_size += n;
 
 		} else {
 
-			reverse_iterator input = rbegin();
-			reverse_iterator output = rbegin() - n;
+			ft::copy_uninitialized(end() - n, end(), end(), _alloc);
+			ft::copy_backward(position, end() - n, end());
 
-			// move table, construct at end and assign rest
+			// Assign fill to positoin
 			for (size_type i = 0; i < n; ++i) {
-				_alloc.construct(&(*output), *input);
-				++input;
-				++output;
+				*position = val;
+				++position;
 			}
-
-			while (input.base() != position) {
-				*output = *input;
-				++input;
-				++output;
-			}
-
-			for (size_type i = 0; i < n; ++i) {
-				*output = val;
-				++output;
-			}
-
-			while (input != rend()) {
-				*output = *input;
-				++input;
-				++output;
-			}
-			_size = size() + n;
+			_size += n;
 		}
 	}
 
 	// Range
 	template <class InputIterator>
-	void insert (iterator position, InputIterator first, InputIterator last) {}
+	void insert (iterator position, InputIterator first, InputIterator last,
+		typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true) {
+		// First we assume RandomAcessIterator type
+		//	(should tag dispatch based on actual type)
+		size_type n = last - first;
+
+		if (size() + n > capacity()) {
+			// Allocate new space
+			size_type new_capacity = ft::max(capacity() * 2, size() + n);
+			pointer temp = _allocate(new_capacity);
+
+			pointer next;
+			next = ft::copy_uninitialized(begin(), position, temp, _alloc);
+			next = ft::copy_uninitialized(first, last, next, _alloc);
+			ft::copy_uninitialized(position, end(), next, _alloc);
+
+			_deallocate();
+			_table = temp;
+			_capacity = new_capacity;
+			_size = size() + n;
+		} else {
+			// Copy into current space
+			/*
+				1. Initialize empty spots
+				2. Backward copy filled spots
+				3. Assign from iterators
+			*/
+			ft::copy_uninitialized(end() - n, end(), end(), _alloc);
+			ft::copy_backward(position, end() - n, end());
+			ft::copy(first, last, position);
+			_size += n;
+		}
+	}
 
 	// iterator erase (iterator position);
 	// iterator erase (iterator first, iterator last);
@@ -466,6 +418,33 @@ private:
 			reserve(1);
 		} else {
 			reserve(capacity() * 2);
+		}
+	}
+
+	pointer _allocate_dynamic(size_type n) {
+		if (capacity() * 2 > n) {
+			return _alloc.allocate(capacity() * 2);
+		} else {
+			return _alloc.allocate(n);
+		}
+	}
+
+	pointer _allocate(size_type n) {
+		return _alloc.allocate(n);
+	}
+
+	void _destroy() {
+		if (_table) {
+			for (size_type i = 0; i < size(); ++i) {
+				_alloc.destroy(_table + i);
+			}
+		}
+	}
+
+	void _deallocate() {
+		if (_table) {
+			_destroy();
+			_alloc.deallocate(_table, capacity());
 		}
 	}
 

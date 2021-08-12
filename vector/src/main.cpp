@@ -56,23 +56,23 @@ int Example::total = 0;
 
 class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {};
 
-# define N std
+# define N ft
 
 #ifndef CATCH_TEST_ENABLED
 int main() {
 
-	N::vector<Example, std::allocator<Example>> v(2);
-	std::cout << std::endl;
-	N::vector<Example> v2(5);
-	v2.reserve(100);
 
-	PrintContainer(v);
-	PrintContainer(v2);
-	std::cout << std::endl << "INSERT:" << std::endl;
-	v2.insert(v2.begin() + 1, v.begin(), v.end());
-	PrintContainer(v2);
-	std::cout << std::endl;
+	N::vector<int> v(5, 10);
 
+	v.insert(v.end(), 10, 42);
+
+	// PrintContainer(v);
+
+	// v.insert(v.begin(), 50, 100);
+	// PrintContainer(v);
+
+	// v.insert(v.begin() + 5, 1000, 1);
+	// PrintContainer(v);
 	return 0;
 }
 #endif

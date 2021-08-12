@@ -20,6 +20,21 @@ struct integral_constant {
 typedef integral_constant<bool, true> true_type;
 typedef integral_constant<bool, false> false_type;
 
+/*
+Member: type
+	- type T: if B is true
+	- type F: if B is false
+*/
+template <bool B, class T, class F>
+struct conditional {
+	typedef T type;
+};
+
+template <class T, class F>
+struct conditional<false, T, F> {
+	typedef F type;
+};
+
 /* remove_cv (const/volatile) specializations */
 
 template <class T>
