@@ -81,10 +81,7 @@ public:
 
 /* Destructor */
 	~vector() {
-		for (size_type i = 0; i < size(); ++i) {
-			_alloc.destroy(_table + i);
-		}
-		_alloc.deallocate(_table, capacity());
+		_deallocate();
 	}
 
 /* Assignment Operator */
@@ -92,12 +89,10 @@ public:
 		if (this == &x)
 			return *this;
 
-		// Use the assign range function?
 		clear();
 		reserve(x.size());
 		_size = x.size();
-		for (size_type i = 0; i < _size; ++i)
-			_alloc.construct(_table + i, x[i]);
+		ft::copy_uninitialized(x.begin(), x.end(), begin(), _alloc);
 		return *this;
 	}
 
@@ -150,18 +145,13 @@ public:
 			}
 			_size = n;
 			return;
-		}
-
-		if (capacity() * 2 < n) {
-			reserve(n);
 		} else {
-			reserve(capacity() * 2);
-		}
-
-		for (size_type i = size(); i < n; ++i) {
-			// _alloc.construct(_table + i, val);
-			_alloc.construct(_table + i);
-			++_size;
+			reserve(ft::max(capacity() * 2, n));
+			for (size_type i = 0; i < n; ++i ) {
+				_alloc.construct(_table + size() + i);
+			}
+			// ft::construct_uninitialized(n, val, end(), _alloc);
+			_size = n;
 		}
 	}
 
@@ -172,18 +162,10 @@ public:
 			}
 			_size = n;
 			return;
-		}
-
-		if (capacity() * 2 < n) {
-			reserve(n);
 		} else {
-			reserve(capacity() * 2);
-		}
-
-		for (size_type i = size(); i < n; ++i) {
-			// _alloc.construct(_table + i, val);
-			_alloc.construct(_table + i, val);
-			++_size;
+			reserve(ft::max(capacity() * 2, n));
+			ft::construct_uninitialized(n, val, end(), _alloc);
+			_size = n;
 		}
 	}
 
@@ -200,14 +182,11 @@ public:
 			return;
 		}
 
-		pointer temp = _alloc.allocate(n);
-		size_type temp_size = size();
+		pointer temp = _allocate(n);
 		if (size() > 0)
 		{
 			ft::copy_uninitialized(begin(), end(), temp, _alloc);
-			clear();
-			_size = temp_size;
-			_alloc.deallocate(_table, capacity());
+			_deallocate();
 		}
 		_capacity = n;
 		_table = temp;
@@ -262,21 +241,16 @@ public:
 		clear();
 		size_type dist = ft::distance(first, last);
 		reserve(dist);
+		ft::copy_uninitialized(first, last, begin(), _alloc);
 		_size = dist;
-		for (size_type i = 0; i < dist; ++i) {
-			_alloc.construct(_table + i, *first);
-			++first;
-		}
 	}
 
 	// Fill
 	void assign(size_type n, const value_type& val) {
 		clear();
 		reserve(n);
+		ft::construct_uninitialized(n, val, _table, _alloc);
 		_size = n;
-		for (size_type i = 0; i < n; ++i) {
-			_alloc.construct(_table + i, val);
-		}
 	}
 
 	void push_back(const value_type& val) {
@@ -327,7 +301,7 @@ public:
 
 			pointer next;
 			next = ft::copy_uninitialized(begin(), position, temp, _alloc);
-			next = ft::construct_uninitialized(next, n, val, _alloc);
+			next = ft::construct_uninitialized(n, val, next, _alloc);
 			ft::copy_uninitialized(position, end(), next, _alloc);
 
 			_deallocate();
@@ -385,8 +359,22 @@ public:
 		}
 	}
 
-	// iterator erase (iterator position);
-	// iterator erase (iterator first, iterator last);
+	iterator erase (iterator position) {
+		ft::copy(position + 1, end(), position);
+		_alloc.destroy(&back());
+		_size -= 1;
+		return position;
+	}
+
+	iterator erase (iterator first, iterator last) {
+		size_type dist = ft::distance(first, last);
+		ft::copy(last, end(), first);
+		for (iterator it = end() - dist; it != end(); ++it) {
+			_alloc.destroy(it);
+		}
+		_size -= dist;
+		return last;
+	}
 
 	void swap(vector& x) {
 		ft::swap(_alloc, x._alloc);
@@ -396,9 +384,7 @@ public:
 	}
 
 	void clear() {
-		for (size_type i = 0; i < size(); ++i) {
-			_alloc.destroy(_table + i);
-		}
+		_destroy();
 		_size = 0;
 	}
 
@@ -414,19 +400,11 @@ private:
 			return;
 		}
 
-		if (capacity() == 0) {
-			reserve(1);
-		} else {
-			reserve(capacity() * 2);
-		}
+		reserve(ft::max(size_type(1), capacity() * 2));
 	}
 
 	pointer _allocate_dynamic(size_type n) {
-		if (capacity() * 2 > n) {
-			return _alloc.allocate(capacity() * 2);
-		} else {
-			return _alloc.allocate(n);
-		}
+		_alloc.allocate(ft::max(capacity() * 2, n));
 	}
 
 	pointer _allocate(size_type n) {
@@ -434,18 +412,21 @@ private:
 	}
 
 	void _destroy() {
-		if (_table) {
-			for (size_type i = 0; i < size(); ++i) {
-				_alloc.destroy(_table + i);
-			}
+		if (!_table) {
+			return;
+		}
+
+		for (size_type i = 0; i < size(); ++i) {
+			_alloc.destroy(_table + i);
 		}
 	}
 
 	void _deallocate() {
-		if (_table) {
-			_destroy();
-			_alloc.deallocate(_table, capacity());
+		if (!_table) {
+			return;
 		}
+		_destroy();
+		_alloc.deallocate(_table, capacity());
 	}
 
 

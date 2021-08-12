@@ -41,8 +41,8 @@ BidirectionalIterator2 copy_backward(BidirectionalIterator1 first,
 }
 
 template <class ValueType, class OutputIterator, class Alloc>
-OutputIterator construct_uninitialized(OutputIterator result, size_t n,
-									const ValueType& val, Alloc& alloc) {
+OutputIterator construct_uninitialized(size_t n, const ValueType& val,
+									OutputIterator result, Alloc& alloc) {
 	for (size_t i = 0; i < n; ++i) {
 		alloc.construct(&(*result), val);
 		++result;

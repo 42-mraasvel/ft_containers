@@ -1,4 +1,5 @@
 #include "header.hpp"
+#include "GenIterator.hpp"
 #include "is_integral.hpp"
 
 template <typename C>
@@ -16,7 +17,6 @@ void PrintContainer(const C& container) {
 	std::cout << '$' << std::endl;
 	PrintCapSize(container);
 }
-
 
 class Example
 {
@@ -56,23 +56,25 @@ int Example::total = 0;
 
 class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {};
 
-# define N ft
+# define N std
 
 #ifndef CATCH_TEST_ENABLED
 int main() {
 
 
-	N::vector<int> v(5, 10);
+	Example table[4] = {};
+	int SIZE = sizeof(table) / sizeof(table[0]);
 
-	v.insert(v.end(), 10, 42);
+	GenIterator<ft::input_iterator_tag, Example> it(table);
+	GenIterator<ft::input_iterator_tag, Example> ite(table + SIZE);
 
-	// PrintContainer(v);
+	std::cout << std::endl << "START:" << std::endl;
+	N::vector<Example> v;
+	v.assign(it, ite);
+	std::cout << std::endl;
 
-	// v.insert(v.begin(), 50, 100);
-	// PrintContainer(v);
+	PrintContainer(v);
 
-	// v.insert(v.begin() + 5, 1000, 1);
-	// PrintContainer(v);
 	return 0;
 }
 #endif

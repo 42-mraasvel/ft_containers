@@ -2,7 +2,6 @@ TODO
 
 list vector methods left:
 
-	erase
 	relational operators
 
 	https://www.boost.org/community/generic_programming.html

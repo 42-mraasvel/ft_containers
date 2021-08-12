@@ -418,8 +418,34 @@ TEST_CASE("vector insert range", "[vector]") {
 	REQUIRE(v.size() == 14);
 }
 
-TEST_CASE("vector erase", "[vector]") {
+TEST_CASE("vector erase single", "[vector]") {
+	VectorInt_t v;
+	for (int i = 0; i < 5; ++i) {
+		v.push_back(i + 1);
+	}
 
+	v.erase(v.end() - 1);
+	REQUIRE(v.back() == 4);
+	v.erase(v.begin());
+	REQUIRE(v.front() == 2);
+	REQUIRE(v.size() == 3);
+}
+
+TEST_CASE("vector erase multiple", "[vector]") {
+	VectorInt_t v(100, 1);
+
+	REQUIRE(v.size() == 100);
+	v.erase(v.begin(), v.end());
+	REQUIRE(v.size() == 0);
+	REQUIRE(v.capacity() == 100);
+	for (int i = 0; i < 5; ++i) {
+		v.push_back(i + 1);
+	}
+
+	v.erase(v.begin(), v.begin() + 4);
+	REQUIRE(v.size() == 1);
+	REQUIRE(v.front() == 5);
+	REQUIRE(v.back() == 5);
 }
 
 TEST_CASE("vector swap", "[vector]") {
