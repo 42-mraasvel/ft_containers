@@ -2,12 +2,12 @@ TODO
 
 list vector methods left:
 
-	relational operators
+	Relation operator TESTS!
 
-	https://www.boost.org/community/generic_programming.html
+	Rewrite all functions:
+		- Test with example class
+		- Iterator category dispatching
 
-	read resize() documentation, through assignment or construction?
-	look at tag dispatching
 	iterator constructor: checks iterator_tags
 
 	C++98 standard: look at every function and check construct vs assign differences

@@ -56,25 +56,21 @@ int Example::total = 0;
 
 class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {};
 
-# define N std
+# define N ft
 
 #ifndef CATCH_TEST_ENABLED
 int main() {
 
 
-	Example table[4] = {};
-	int SIZE = sizeof(table) / sizeof(table[0]);
+	N::vector<int> v(10);
+	N::vector<int> v2(10);
 
-	GenIterator<ft::input_iterator_tag, Example> it(table);
-	GenIterator<ft::input_iterator_tag, Example> ite(table + SIZE);
-
-	std::cout << std::endl << "START:" << std::endl;
-	N::vector<Example> v;
-	v.assign(it, ite);
-	std::cout << std::endl;
-
+	v.push_back(1);
+	v2.push_back(1);
 	PrintContainer(v);
 
+	std::cout << std::boolalpha;
+	std::cout << (v <= v2) << std::endl;
 	return 0;
 }
 #endif
