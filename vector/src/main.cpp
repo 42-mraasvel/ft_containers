@@ -1,6 +1,7 @@
 #include "header.hpp"
 #include "GenIterator.hpp"
 #include "is_integral.hpp"
+#include "FakeAllocator.hpp"
 
 template <typename C>
 void PrintCapSize(const C& container) {
@@ -14,7 +15,7 @@ void PrintContainer(const C& container) {
 	for (typename C::size_type i = 0; i < container.size(); ++i) {
 		std::cout << ' ' << container[i];
 	}
-	std::cout << '$' << std::endl;
+	std::cout << std::endl;
 	PrintCapSize(container);
 }
 
@@ -25,6 +26,9 @@ public:
 		n = total++;
 		std::cout << "Constructor: " << n << std::endl;
 	}
+
+	Example(int n)
+	: n(n) {}
 
 	Example(const Example& from) {
 		n = from.n;
@@ -56,21 +60,39 @@ int Example::total = 0;
 
 class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {};
 
-# define N ft
 
 #ifndef CATCH_TEST_ENABLED
+
+# ifndef N
+# define N ft
+# define DT Example
+# endif
+
+/*
+input_iterator_tag;
+output_iterator_tag;
+forward_iterator_tag;
+bidirectional_iterator_tag;
+random_access_iterator_tag;
+*/
+
 int main() {
 
+	const int size = 5;
+	DT table[size]{};
+	std::cout << std::endl;
 
-	N::vector<int> v(10);
-	N::vector<int> v2(10);
+	GenIterator<ft::random_access_iterator_tag, DT> it = table;
+	GenIterator<ft::random_access_iterator_tag, DT> ite = table + size;
 
-	v.push_back(1);
-	v2.push_back(1);
+	N::vector<DT> v;
+
+	v.push_back(Example(1));
+
+	v.pop_back();
+
 	PrintContainer(v);
-
-	std::cout << std::boolalpha;
-	std::cout << (v <= v2) << std::endl;
+	std::cout << std::endl;
 	return 0;
 }
 #endif

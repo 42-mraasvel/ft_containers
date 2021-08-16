@@ -22,19 +22,19 @@ TEST_CASE("vector default constructor", "[vector]") {
 }
 
 TEST_CASE("vector fill constructor", "[vector]") {
-	const VectorInt_t v(5, 100);
+	const NS::vector<int> v(5, 100);
 	REQUIRE(v.size() == 5);
-	for (VectorInt_t::size_type i(0); i < v.size(); ++i) {
+	for (NS::vector<int>::size_type i(0); i < v.size(); ++i) {
 		REQUIRE(v[i] == 100);
 	}
 
-	const VectorInt_t v2(1);
+	const NS::vector<int> v2(1);
 	REQUIRE(v2.size() == 1);
 	REQUIRE(v2[0] == 0);
 
-	const VectorInt_t v3(10, 420);
+	const NS::vector<int> v3(10, 420);
 	REQUIRE(v3.size() == 10);
-	for (VectorInt_t::size_type i(0); i < v.size(); ++i) {
+	for (NS::vector<int>::size_type i(0); i < v.size(); ++i) {
 		REQUIRE(v3[i] == 420);
 	}
 }
@@ -77,6 +77,8 @@ TEST_CASE("vector assignment operator= #1", "[vector]") {
 	VectorInt_t v(5, 5);
 	VectorInt_t v2;
 	v.reserve(20);
+	REQUIRE(v.capacity() == 20);
+	REQUIRE(v.size() == 5);
 	v2 = v;
 	REQUIRE(v2.capacity() == 5);
 	REQUIRE(v2.size() == 5);
@@ -482,6 +484,18 @@ TEST_CASE("vector get_allocator", "[vector]") {
 /* Non-member function overloads */
 
 /* Relational Operators */
+
+TEST_CASE("vector relational operators", "[vector]") {
+	NS::vector<int> v(3, 100);
+	NS::vector<int> v2(2, 200);
+
+	REQUIRE(!(v == v2));
+	REQUIRE(v != v2);
+	REQUIRE(v < v2);
+	REQUIRE(!(v > v2));
+	REQUIRE(v <= v2);
+	REQUIRE(!(v >= v2));
+}
 
 /* Swap */
 

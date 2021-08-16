@@ -12,6 +12,7 @@ Resources:
 
 # include "utils.hpp"
 # include "reverse_iterator.hpp"
+# include "iterator_traits.hpp"
 # include "enable_if.hpp"
 # include "is_integral.hpp"
 # include "equal.hpp"
@@ -58,20 +59,16 @@ public:
 					const allocator_type& alloc = allocator_type())
 	: _alloc(alloc), _capacity(n), _size(n) {
 
-		_table = _alloc.allocate(n);
-		for (size_type i = 0; i < size(); ++i) {
-			_alloc.construct(_table + i, val);
-		}
+		_table = _allocate(n);
+		_initialize_mem(_table, n, val);
 	}
 
 	// Range: use template enable_if to prevent integrals from calling this
 	template <class InputIterator>
 	vector(InputIterator first, InputIterator last,
-			const allocator_type& alloc = allocator_type(),
-			typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true)
+			const allocator_type& alloc = allocator_type())
 	: _alloc(alloc), _capacity(0), _size(0), _table(NULL) {
-
-		assign(first, last);
+		_internal_constructor(first, last, _is_integral(first));
 	}
 
 	// Copy
@@ -90,10 +87,7 @@ public:
 		if (this == &x)
 			return *this;
 
-		clear();
-		reserve(x.size());
-		_size = x.size();
-		ft::copy_uninitialized(x.begin(), x.end(), begin(), _alloc);
+		assign(x.begin(), x.end());
 		return *this;
 	}
 
@@ -139,33 +133,18 @@ public:
 		return _alloc.max_size();
 	}
 
-	void resize(size_type n) {
+	void resize(size_type n, const value_type& val = value_type()) {
 		if (n < size()) {
+			// Destroy the tail n members
 			for (size_type i = size(); i > n; --i) {
-				_alloc.destroy(_table + i);
+				_alloc.destroy(_table + i - 1);
 			}
 			_size = n;
-			return;
-		} else {
-			reserve(ft::max(capacity() * 2, n));
-			for (size_type i = 0; i < n; ++i ) {
-				_alloc.construct(_table + size() + i);
+		} else if (n > size()) {
+			if (n > capacity()) {
+				reserve(ft::max(capacity() * 2, n));
 			}
-			// ft::construct_uninitialized(n, val, end(), _alloc);
-			_size = n;
-		}
-	}
-
-	void resize(size_type n, const value_type& val) {
-		if (n < size()) {
-			for (size_type i = size(); i > n; --i) {
-				_alloc.destroy(_table + i);
-			}
-			_size = n;
-			return;
-		} else {
-			reserve(ft::max(capacity() * 2, n));
-			ft::construct_uninitialized(n, val, end(), _alloc);
+			ft::construct_uninitialized(n - _size, val, end(), _alloc);
 			_size = n;
 		}
 	}
@@ -184,9 +163,8 @@ public:
 		}
 
 		pointer temp = _allocate(n);
-		if (size() > 0)
-		{
-			ft::copy_uninitialized(begin(), end(), temp, _alloc);
+		if (size() > 0) {
+			_initialize_mem(temp, begin(), end());
 			_deallocate();
 		}
 		_capacity = n;
@@ -226,44 +204,36 @@ public:
 	}
 
 	reference back() {
-		return _table[_size - 1];
+		return _table[size() - 1];
 	}
 
 	const_reference back() const {
-		return _table[_size - 1];
+		return _table[size() - 1];
 	}
 
 /* Modifiers */
 	// Range
 	template <class InputIterator>
-	void assign(InputIterator first, InputIterator last,
-			typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true) {
-
-		clear();
-		size_type dist = ft::distance(first, last);
-		reserve(dist);
-		ft::copy_uninitialized(first, last, begin(), _alloc);
-		_size = dist;
+	void assign(InputIterator first, InputIterator last) {
+		_assign_dispatch(first, last);
 	}
 
 	// Fill
 	void assign(size_type n, const value_type& val) {
-		clear();
-		reserve(n);
-		ft::construct_uninitialized(n, val, _table, _alloc);
-		_size = n;
+		_assign_dispatch(n, val);
 	}
 
 	void push_back(const value_type& val) {
 		_ensure_capacity();
-		_alloc.construct(_table + _size, val);
+		_alloc.construct(end(), val);
 		++_size;
 	}
 
 	void pop_back() {
-		_alloc.destroy(_table + _size);
+		_alloc.destroy(&back());
 		--_size;
 	}
+
 	// Single Element
 	iterator insert(iterator position, const value_type& val) {
 		if (size() >= capacity())
@@ -326,7 +296,7 @@ public:
 
 	// Range
 	template <class InputIterator>
-	void insert (iterator position, InputIterator first, InputIterator last,
+	void insert(iterator position, InputIterator first, InputIterator last,
 		typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true) {
 		// First we assume RandomAcessIterator type
 		//	(should tag dispatch based on actual type)
@@ -395,6 +365,78 @@ public:
 	}
 
 private:
+/* Internal Construction, Initialization Dispatching */
+
+	/* Fill */
+	void _internal_constructor(size_type n, const value_type& val = value_type(),
+							ft::true_type integral = ft::true_type()) {
+		_table = _allocate(n);
+		_size = n;
+		_capacity = n;
+		_initialize_mem(_table, n, val);
+	}
+
+	/* Range Constructors */
+	template <class InputIterator>
+	void _internal_constructor(InputIterator first, InputIterator last,
+							ft::false_type integral = ft::false_type()) {
+		/* Iterator Tag Dispatch */
+		_range_construct_dispatch(first, last, ft::_iterator_category(first));
+	}
+
+	template <class InputIterator>
+	void _range_construct_dispatch(InputIterator first, InputIterator last,
+									ft::input_iterator_tag tag) {
+		_push_back_range(first, last);
+	}
+
+	template <class ForwardIterator>
+	void _range_construct_dispatch(ForwardIterator first, ForwardIterator last,
+									ft::forward_iterator_tag tag) {
+		size_type n = ft::distance(first, last);
+		_table = _allocate(n);
+		_capacity = n;
+		_initialize_mem(_table, first, last);
+		_size = n;
+	}
+
+/* Assign Dispatching */
+
+	void _assign_dispatch(size_type n, const value_type& val) {
+		_assign_fill(n, val);
+	}
+
+	template <class InputIterator>
+	void _assign_dispatch(InputIterator first, InputIterator last, \
+	typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true) {
+		_assign_range(first, last, ft::_iterator_category(first));
+	}
+
+	void _assign_fill(size_type n, const value_type& val) {
+		clear();
+		reserve(n);
+		_initialize_mem(_table, n, val);
+		_size = n;
+	}
+
+	template <class InputIterator>
+	void _assign_range(InputIterator first, InputIterator last,
+						ft::input_iterator_tag tag) {
+		clear();
+		_push_back_range(first, last);
+	}
+
+	template <class ForwardIterator>
+	void _assign_range(ForwardIterator first, ForwardIterator last,
+						ft::forward_iterator_tag tag) {
+		clear();
+		size_type dist = static_cast<size_type> (ft::distance(first, last));
+		reserve(dist);
+		_initialize_mem(_table, first, last);
+		_size = dist;
+	}
+
+
 /* Extra Functions / Utilities */
 	void _ensure_capacity() {
 		if (size() < capacity()) {
@@ -428,6 +470,32 @@ private:
 		}
 		_destroy();
 		_alloc.deallocate(_table, capacity());
+		_table = NULL;
+		_capacity = 0;
+	}
+
+	void _initialize_mem(pointer dest, size_type n, const value_type& val) {
+		for (size_type i = 0; i < n; ++i) {
+			_alloc.construct(dest + i, val);
+		}
+	}
+
+	template <class InputIterator>
+	void _initialize_mem(pointer dest, InputIterator first, InputIterator last,
+				typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true) {
+		while (first != last) {
+			_alloc.construct(dest, *first);
+			++first;
+			++dest;
+		}
+	}
+
+	template <class InputIterator>
+	void _push_back_range(InputIterator first, InputIterator last) {
+		while (first != last) {
+			push_back(*first);
+			++first;
+		}
 	}
 
 
@@ -457,10 +525,6 @@ bool operator!=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
 
 template <class T, class Alloc>
 bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
-	if (lhs.size() < rhs.size()) {
-		return true;
-	}
-
 	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 

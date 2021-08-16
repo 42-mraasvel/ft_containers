@@ -3,20 +3,10 @@
 
 # include <cstddef>
 # include "is_integral.hpp"
+# include "distance.hpp"
 # include <memory>
 
 namespace ft {
-
-template <class InputIterator>
-ptrdiff_t distance(InputIterator first, InputIterator last) {
-
-	ptrdiff_t d(0);
-	while (first != last) {
-		++d;
-		++first;
-	}
-	return d;
-}
 
 template <class InputIterator, class OutputIterator>
 OutputIterator copy(InputIterator first, InputIterator last, OutputIterator result) {

@@ -80,6 +80,12 @@ public:
 	}
 };
 
+template <typename Iterator>
+typename ft::iterator_traits<Iterator>::iterator_category
+_iterator_category(Iterator) {
+	return typename ft::iterator_traits<Iterator>::iterator_category();
+}
+
 }
 
 #endif /* ITERATOR_TRAITS_HPP */

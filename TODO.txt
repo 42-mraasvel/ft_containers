@@ -1,29 +1,38 @@
 TODO
 
-list vector methods left:
+	insert
+	erase
+	swap
+	clear
 
-	Relation operator TESTS!
+	assignment operator
+	copy constructor
+
+	Function by function:
+		1. Check what needs to be done (Dispatching? etc)
+		2. Check what the STD version does
+		3. Mimic what the STD version does
 
 	Rewrite all functions:
 		- Test with example class
 		- Iterator category dispatching
 
-	iterator constructor: checks iterator_tags
-
-	C++98 standard: look at every function and check construct vs assign differences
-
-	Optimizations using example class, read the outputs of constructors etc and determine how the STL is optimized
-
 NEXT:
-	Implement the other required reimplementations
-	Finish vector implementation
-	Implement comparison operators and swap? (for vector)
 
-	Clean up all vector methods and class, small functions etc
+	Implement other containers <STACK> <MAP>
 
-	Implement other containers
+Allocator:
+
+	https://medium.com/@vgasparyan1995/what-is-an-allocator-c8df15a93ed
+	https://en.cppreference.com/w/cpp/named_req/Allocator
 
 Iterators:
 
 	https://www.cplusplus.com/reference/iterator/#:~:text=An%20iterator%20is%20any%20object,dereference%20(%20*%20)%20operators).
 	for all properties that should be supported
+
+DONE:
+	constructors
+	destructor
+	iterators
+	capacity

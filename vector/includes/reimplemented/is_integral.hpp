@@ -1,6 +1,8 @@
 #ifndef IS_INTEGRAL_HPP
 # define IS_INTEGRAL_HPP
 
+# include "enable_if.hpp"
+
 namespace ft {
 
 /* Integral_constant: bool specializations */
@@ -52,37 +54,52 @@ struct remove_cv<volatile T> {
 	typedef T type;
 };
 
-/* is_integral base versions */
+	namespace _base_detail {
 
-template <class T>
-struct is_integral_base : public ft::false_type {};
+	/* is_integral base versions */
 
-template <> struct is_integral_base <bool>			: public ft::true_type {};
-template <> struct is_integral_base <char>			: public ft::true_type {};
-template <> struct is_integral_base <wchar_t>		: public ft::true_type {};
-template <> struct is_integral_base <signed char>	: public ft::true_type {};
-template <> struct is_integral_base <short>			: public ft::true_type {};
-template <> struct is_integral_base <int>			: public ft::true_type {};
-template <> struct is_integral_base <long>			: public ft::true_type {};
-template <> struct is_integral_base <unsigned char>	: public ft::true_type {};
-template <> struct is_integral_base <unsigned short>: public ft::true_type {};
-template <> struct is_integral_base <unsigned int>	: public ft::true_type {};
-template <> struct is_integral_base <unsigned long>	: public ft::true_type {};
+	template <class T>
+	struct is_integral_base : public ft::false_type {};
 
-/* C++ 11 extension data types */
+	template <> struct is_integral_base <bool>			: public ft::true_type {};
+	template <> struct is_integral_base <char>			: public ft::true_type {};
+	template <> struct is_integral_base <wchar_t>		: public ft::true_type {};
+	template <> struct is_integral_base <signed char>	: public ft::true_type {};
+	template <> struct is_integral_base <short>			: public ft::true_type {};
+	template <> struct is_integral_base <int>			: public ft::true_type {};
+	template <> struct is_integral_base <long>			: public ft::true_type {};
+	template <> struct is_integral_base <unsigned char>	: public ft::true_type {};
+	template <> struct is_integral_base <unsigned short>: public ft::true_type {};
+	template <> struct is_integral_base <unsigned int>	: public ft::true_type {};
+	template <> struct is_integral_base <unsigned long>	: public ft::true_type {};
 
-// template <> struct is_integral_base <char16_t>				: public ft::true_type {};
-// template <> struct is_integral_base <char32_t>				: public ft::true_type {};
-// template <> struct is_integral_base <long long int>			: public ft::true_type {};
-// template <> struct is_integral_base <unsigned long long>	: public ft::true_type {};
+	/* C++ 11 extension data types */
 
+	// template <> struct is_integral_base <char16_t>				: public ft::true_type {};
+	// template <> struct is_integral_base <char32_t>				: public ft::true_type {};
+	// template <> struct is_integral_base <long long int>			: public ft::true_type {};
+	// template <> struct is_integral_base <unsigned long long>	: public ft::true_type {};
+
+	}
 
 /* Actual is_integral implementation */
 
 template <class T>
 struct is_integral
-	: public ft::is_integral_base<typename ft::remove_cv<T>::type>
+	: public _base_detail::is_integral_base<typename ft::remove_cv<T>::type>
 {};
+
+template <class T>
+true_type _is_integral(const T& a,
+			typename ft::enable_if<ft::is_integral<T>::value, bool>::type = true) {
+	return true_type();
+}
+
+template <class T>
+false_type _is_integral(const T& a,
+			typename ft::enable_if<!ft::is_integral<T>::value, bool>::type = false) {
+	return false_type();
+}
 
 }
 

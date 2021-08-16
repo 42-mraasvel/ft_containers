@@ -15,7 +15,6 @@ typedef std::forward_iterator_tag forward_iterator_tag;
 typedef std::bidirectional_iterator_tag bidirectional_iterator_tag;
 typedef std::random_access_iterator_tag random_access_iterator_tag;
 
-
 /*
 Iterator base class
 */

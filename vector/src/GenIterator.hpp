@@ -108,14 +108,14 @@ private:
 template <class IteratorTag, typename T>
 GenIterator<IteratorTag, T> operator+(typename GenIterator<IteratorTag, T>::difference_type lhs,
 							const GenIterator<IteratorTag, T>& rhs) {
-	return rhs + lhs;
+	return lhs + rhs;
 }
 
 template <class Iterator, typename T>
 typename GenIterator<Iterator, T>::difference_type operator-(
 			const GenIterator<Iterator, T>& lhs,
 			const GenIterator<Iterator, T>& rhs) {
-	return rhs.base() - lhs.base();
+	return lhs.base() - rhs.base();
 }
 
 
