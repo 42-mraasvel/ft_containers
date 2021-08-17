@@ -12,8 +12,6 @@
 #include "catch2/catch.hpp"
 
 
-/* Member Types */
-
 /* Constructors */
 TEST_CASE("vector default constructor", "[vector]") {
 	const VectorInt_t v;

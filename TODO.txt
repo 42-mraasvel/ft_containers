@@ -1,11 +1,11 @@
 TODO
 
-	Implement other containers <STACK> <MAP>
+	Allocator:
 
-Allocator:
+		https://medium.com/@vgasparyan1995/what-is-an-allocator-c8df15a93ed
+		https://en.cppreference.com/w/cpp/named_req/Allocator
 
-	https://medium.com/@vgasparyan1995/what-is-an-allocator-c8df15a93ed
-	https://en.cppreference.com/w/cpp/named_req/Allocator
+	value_compare
 
 Iterators:
 

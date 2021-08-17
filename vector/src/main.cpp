@@ -2,6 +2,8 @@
 #include "GenIterator.hpp"
 #include "is_integral.hpp"
 #include "FakeAllocator.hpp"
+#include "map.hpp"
+#include <map>
 
 template <typename C>
 void PrintCapSize(const C& container) {
@@ -64,7 +66,7 @@ class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {}
 #ifndef CATCH_TEST_ENABLED
 
 # ifndef N
-# define N std
+# define N ft
 # define DT Example
 # define TAG input_iterator_tag
 # endif
@@ -78,22 +80,8 @@ random_access_iterator_tag;
 */
 
 int main() {
+	N::map<int, int> m;
 
-	const int size = 5;
-	DT table[size];
-	std::cout << std::endl;
-
-	GenIterator<ft::TAG, DT> it = table;
-	GenIterator<ft::TAG, DT> ite = table + size;
-
-	N::vector<DT> v(it, ite);
-
-	PrintContainer(v);
-	N::vector<DT>::iterator tar = v.erase(v.begin() + 1, v.end() - 1);
-	PrintContainer(v);
-	std::cout << (tar - v.begin()) << std::endl;
-
-	std::cout << std::endl;
 	return 0;
 }
 #endif

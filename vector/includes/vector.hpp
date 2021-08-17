@@ -619,5 +619,4 @@ void swap(vector<T, Alloc>& x, vector<T, Alloc>& y) {
 
 }
 
-
 #endif
