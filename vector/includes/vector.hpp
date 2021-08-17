@@ -83,7 +83,7 @@ public:
 	}
 
 /* Assignment Operator */
-	vector<value_type, allocator_type>& operator=(const vector<value_type>& x) {
+	vector& operator=(const vector& x) {
 		if (this == &x)
 			return *this;
 
@@ -236,98 +236,18 @@ public:
 
 	// Single Element
 	iterator insert(iterator position, const value_type& val) {
-		if (size() >= capacity())
-		{
-			size_type new_capacity = ft::max(capacity() * 2, size() + 1);
-			pointer temp = _allocate(new_capacity);
-
-			pointer next;
-			next = ft::copy_uninitialized(begin(), position, temp, _alloc);
-			*next = val;
-			ft::copy_uninitialized(position, end(), next + 1, _alloc);
-
-			_deallocate();
-			_table = temp;
-			_capacity = new_capacity;
-			_size += 1;
-			return next;
-		}
-		else {
-			_alloc.construct(end(), back());
-			if (position + 1 < end()) {
-				ft::copy_backward(position, end() - 1, end());
-			}
-			*position = val;
-			++_size;
-			return position;
-		}
+		return _insert_dispatch(position, 1, val, ft::true_type());
 	}
 
 	// Fill
 	void insert(iterator position, size_type n, const value_type& val) {
-		if (size() + n > capacity()) {
-			// reallocate and construct new table
-			size_type new_capacity = ft::max(capacity() * 2, size() + n);
-			pointer temp = _allocate(new_capacity);
-
-			pointer next;
-			next = ft::copy_uninitialized(begin(), position, temp, _alloc);
-			next = ft::construct_uninitialized(n, val, next, _alloc);
-			ft::copy_uninitialized(position, end(), next, _alloc);
-
-			_deallocate();
-			_table = temp;
-			_capacity = new_capacity;
-			_size += n;
-
-		} else {
-
-			ft::copy_uninitialized(end() - n, end(), end(), _alloc);
-			ft::copy_backward(position, end() - n, end());
-
-			// Assign fill to positoin
-			for (size_type i = 0; i < n; ++i) {
-				*position = val;
-				++position;
-			}
-			_size += n;
-		}
+		_insert_dispatch(position, n, val, ft::true_type());
 	}
 
 	// Range
 	template <class InputIterator>
-	void insert(iterator position, InputIterator first, InputIterator last,
-		typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true) {
-		// First we assume RandomAcessIterator type
-		//	(should tag dispatch based on actual type)
-		size_type n = last - first;
-
-		if (size() + n > capacity()) {
-			// Allocate new space
-			size_type new_capacity = ft::max(capacity() * 2, size() + n);
-			pointer temp = _allocate(new_capacity);
-
-			pointer next;
-			next = ft::copy_uninitialized(begin(), position, temp, _alloc);
-			next = ft::copy_uninitialized(first, last, next, _alloc);
-			ft::copy_uninitialized(position, end(), next, _alloc);
-
-			_deallocate();
-			_table = temp;
-			_capacity = new_capacity;
-			_size = size() + n;
-		} else {
-			// Copy into current space
-			/*
-				1. Initialize empty spots
-				2. Backward copy filled spots
-				3. Assign from iterators
-			*/
-			ft::copy_uninitialized(end() - n, end(), end(), _alloc);
-			ft::copy_backward(position, end() - n, end());
-			ft::copy(first, last, position);
-			_size += n;
-		}
+	void insert(iterator position, InputIterator first, InputIterator last) {
+		_insert_dispatch(position, first, last, ft::_is_integral(first));
 	}
 
 	iterator erase (iterator position) {
@@ -344,7 +264,7 @@ public:
 			_alloc.destroy(it);
 		}
 		_size -= dist;
-		return last;
+		return first;
 	}
 
 	void swap(vector& x) {
@@ -436,6 +356,125 @@ private:
 		_size = dist;
 	}
 
+/* Insert Dispatching */
+
+	iterator _insert_dispatch(iterator position, size_type n,
+							const value_type& val, ft::true_type integral) {
+		return _insert_fill(position, n, val);
+	}
+
+	template <class InputIterator>
+	iterator _insert_dispatch(iterator position, InputIterator first,
+							InputIterator last, ft::false_type integral) {
+		return _insert_range(position, first, last, ft::_iterator_category(first));
+	}
+
+	iterator _insert_fill(iterator position, size_type n, const value_type& val) {
+		if (size() + n > capacity()) {
+			return _insert_fill_resize(position, n, val);
+		} else {
+			return _insert_fill_relocate(position, n , val);
+		}
+	}
+
+	iterator _insert_fill_resize(iterator position, size_type n, const value_type& val) {
+
+		const size_type new_cap = ft::max(capacity() * 2, size() + n);
+		const difference_type dist = position - begin();
+
+		pointer temp = _allocate(new_cap);
+		_initialize_mem(temp, begin(), position);
+		_initialize_mem(temp + dist, n, val);
+		_initialize_mem(temp + dist + n, position, end());
+		_replace_mem(temp, new_cap, size() + n);
+		return begin() + dist;
+	}
+
+	iterator _insert_fill_relocate(iterator position, size_type n, const value_type& val) {
+		if (position == end()) {
+			_initialize_mem(end(), n, val);
+		} else if (position + n < end()) {
+			// CASE: values inserted go below initialized memory
+			_initialize_mem(end(), end() - n, end());
+			ft::copy_backward(position, end() - n, end());
+			_copy_fill(position, n, val);
+		} else {
+			// CASE: values inserted go beyond initialized memory
+			const difference_type dist = end() - position;
+			_initialize_mem_backward(end() + n, position, end());
+			_initialize_mem(end(), n - dist, val);
+			_copy_fill(position, dist, val);
+		}
+		_size += n;
+		return position;
+	}
+
+	template <class InputIterator>
+	iterator _insert_range(iterator position, InputIterator first, InputIterator last,
+							ft::input_iterator_tag tag) {
+		/* Since InputIterators can only be iterated once, we need to allocate dynamically */
+		const difference_type dist = position - begin();
+		const size_type old_size = size();
+		const size_type old_cap = capacity();
+
+		pointer temp = _table;
+		_table = _allocate(capacity());
+		_initialize_mem(_table, temp, position);
+		_size = dist;
+		_push_back_range(first, last);
+		_push_back_range(position, temp + old_size);
+		_destroy_range(temp, temp + old_size);
+		_alloc.deallocate(temp, old_cap);
+		return position;
+	}
+
+	template <class ForwardIterator>
+	iterator _insert_range(iterator position, ForwardIterator first, ForwardIterator last,
+							ft::forward_iterator_tag tag) {
+
+		const difference_type n = ft::distance(first, last);
+
+		if (size() + n > capacity()) {
+			return _insert_range_resize_forward(position, first, last, n);
+		} else {
+			return _insert_range_relocate_forward(position, first, last, n);
+		}
+	}
+
+	template <class ForwardIterator>
+	iterator _insert_range_resize_forward(iterator position, ForwardIterator first,
+											ForwardIterator last, size_type n) {
+		const size_type dist = position - begin();
+		const size_type new_cap = ft::max(capacity() * 2, size() + n);
+
+		pointer temp = _allocate(new_cap);
+		_initialize_mem(temp, begin(), position);
+		_initialize_mem(temp + dist, first, last);
+		_initialize_mem(temp + dist + n, position, end());
+		_replace_mem(temp, new_cap, size() + n);
+		return begin() + dist;
+	}
+
+	template <class ForwardIterator>
+	iterator _insert_range_relocate_forward(iterator position, ForwardIterator first,
+											ForwardIterator last, size_type n) {
+		if (position == end()) {
+			_initialize_mem(end(), first, last);
+		} else if (position + n < end()) {
+			// CASE: values inserted go below initialized memory
+			_initialize_mem(end(), end() - n, end());
+			ft::copy_backward(position, end() - n, end());
+			ft::copy(first, last, position);
+		} else {
+			// CASE: values inserted go beyond initialized memory
+			const difference_type dist = end() - position;
+			_initialize_mem_backward(end() + n, position, end());
+			_initialize_mem(end(), first + dist, last);
+			ft::copy(first, last - dist, position);
+		}
+		_size += n;
+		return position;
+	}
 
 /* Extra Functions / Utilities */
 	void _ensure_capacity() {
@@ -444,6 +483,13 @@ private:
 		}
 
 		reserve(ft::max(size_type(1), capacity() * 2));
+	}
+
+	void _replace_mem(pointer new_table, size_type new_cap, size_type new_size) {
+		_deallocate();
+		_table = new_table;
+		_size = new_size;
+		_capacity = new_cap;
 	}
 
 	pointer _allocate_dynamic(size_type n) {
@@ -491,9 +537,31 @@ private:
 	}
 
 	template <class InputIterator>
+	void _initialize_mem_backward(pointer dest, InputIterator first, InputIterator last) {
+		while (last != first) {
+			--last;
+			--dest;
+			_alloc.construct(dest, *last);
+		}
+	}
+
+	void _copy_fill(pointer dest, size_type n, const value_type& val) {
+		for (size_type i = 0; i < n; ++i) {
+			dest[i] = val;
+		}
+	}
+
+	template <class InputIterator>
 	void _push_back_range(InputIterator first, InputIterator last) {
 		while (first != last) {
 			push_back(*first);
+			++first;
+		}
+	}
+
+	void _destroy_range(pointer first, pointer last) {
+		while (first != last) {
+			_alloc.destroy(first);
 			++first;
 		}
 	}
@@ -550,5 +618,6 @@ void swap(vector<T, Alloc>& x, vector<T, Alloc>& y) {
 }
 
 }
+
 
 #endif

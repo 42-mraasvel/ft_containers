@@ -64,8 +64,9 @@ class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {}
 #ifndef CATCH_TEST_ENABLED
 
 # ifndef N
-# define N ft
+# define N std
 # define DT Example
+# define TAG input_iterator_tag
 # endif
 
 /*
@@ -79,19 +80,19 @@ random_access_iterator_tag;
 int main() {
 
 	const int size = 5;
-	DT table[size]{};
+	DT table[size];
 	std::cout << std::endl;
 
-	GenIterator<ft::random_access_iterator_tag, DT> it = table;
-	GenIterator<ft::random_access_iterator_tag, DT> ite = table + size;
+	GenIterator<ft::TAG, DT> it = table;
+	GenIterator<ft::TAG, DT> ite = table + size;
 
-	N::vector<DT> v;
-
-	v.push_back(Example(1));
-
-	v.pop_back();
+	N::vector<DT> v(it, ite);
 
 	PrintContainer(v);
+	N::vector<DT>::iterator tar = v.erase(v.begin() + 1, v.end() - 1);
+	PrintContainer(v);
+	std::cout << (tar - v.begin()) << std::endl;
+
 	std::cout << std::endl;
 	return 0;
 }

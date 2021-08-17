@@ -1,24 +1,5 @@
 TODO
 
-	insert
-	erase
-	swap
-	clear
-
-	assignment operator
-	copy constructor
-
-	Function by function:
-		1. Check what needs to be done (Dispatching? etc)
-		2. Check what the STD version does
-		3. Mimic what the STD version does
-
-	Rewrite all functions:
-		- Test with example class
-		- Iterator category dispatching
-
-NEXT:
-
 	Implement other containers <STACK> <MAP>
 
 Allocator:

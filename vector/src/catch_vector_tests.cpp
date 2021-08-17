@@ -1,7 +1,6 @@
 #include "settings.hpp"
 #include "proto.hpp"
 #include "utils.hpp"
-#include "catch2/catch.hpp"
 #include "vector.hpp"
 #include <stdexcept>
 #include <memory>
@@ -10,6 +9,7 @@
 #include <iostream>
 
 #ifdef CATCH_TEST_ENABLED
+#include "catch2/catch.hpp"
 
 
 /* Member Types */
@@ -373,9 +373,13 @@ TEST_CASE("vector pop_back", "[vector]") {
 TEST_CASE("vector insert single element", "[vector]") {
 	VectorInt_t v(5, 10);
 
+	VectorInt_t::iterator it;
+
 	REQUIRE(v.size() == 5);
-	v.insert(v.begin() + 1, 1);
+	it = v.insert(v.begin() + 1, 1);
 	REQUIRE(v[1] == 1);
+	REQUIRE(*it == 1);
+	REQUIRE(&(*it) == &v[1]);
 	REQUIRE(v.size() == 6);
 
 	v.insert(v.end(), 2);
@@ -482,6 +486,17 @@ TEST_CASE("vector get_allocator", "[vector]") {
 }
 
 /* Non-member function overloads */
+
+TEST_CASE("vector swap non-member", "[vector]") {
+	NS::vector<int> v(10, 10);
+	NS::vector<int> v2(42, 42);
+
+	REQUIRE(v.size() == 10);
+	REQUIRE(v2.size() == 42);
+	swap(v, v2);
+	REQUIRE(v.size() == 42);
+	REQUIRE(v2.size() == 10);
+}
 
 /* Relational Operators */
 

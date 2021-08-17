@@ -1,5 +1,4 @@
 #include "settings.hpp"
-#include "catch2/catch.hpp"
 
 #include <vector>
 
@@ -12,6 +11,7 @@
 #include "reverse_iterator.hpp"
 
 #ifdef CATCH_TEST_ENABLED
+#include "catch2/catch.hpp"
 
 
 /*

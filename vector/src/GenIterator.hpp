@@ -34,6 +34,7 @@ public:
 /* Input */
 	GenIterator& operator=(const GenIterator& rhs) {
 		_ptr = rhs.base();
+		return *this;
 	}
 
 	GenIterator& operator++() {
