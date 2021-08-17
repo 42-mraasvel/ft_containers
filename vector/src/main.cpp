@@ -65,11 +65,9 @@ class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {}
 
 #ifndef CATCH_TEST_ENABLED
 
-# ifndef N
 # define N ft
 # define DT Example
 # define TAG input_iterator_tag
-# endif
 
 /*
 input_iterator_tag;
@@ -84,4 +82,4 @@ int main() {
 
 	return 0;
 }
-#endif
+#endif /* CATCH_TEST_ENABLED */
