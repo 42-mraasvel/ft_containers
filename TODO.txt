@@ -1,5 +1,7 @@
 TODO
 
+	AVL tree setup, videos: see NOTES
+
 	REBIND ALLOCATOR??
 
 	value_compare
