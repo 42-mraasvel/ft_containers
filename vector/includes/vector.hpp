@@ -91,7 +91,8 @@ public:
 		return *this;
 	}
 
-/* Iterators! TODO */
+/* Iterators! */
+
 	iterator begin() {
 		return _table;
 	}

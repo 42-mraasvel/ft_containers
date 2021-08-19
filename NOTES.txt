@@ -1,0 +1,32 @@
+BINARY TREE
+
+	Full
+		Leaves have no children
+		Nodes that do have children, have 2 children
+	Complete
+		Like binary heaps
+		Fill out top to bottom, left to right
+	Perfect
+		Both complete and FULL
+		All leaves are on the same level
+
+	Traversals
+
+		N = Node, L = Left, R = Right
+		Preorder
+			N L R
+		Inorder
+			L N R
+		Postorder
+			L R N
+
+
+AVL TREES
+
+	https://www.youtube.com/watch?v=vRwi_UcZGjU
+
+	Balance
+	
+	https://www.youtube.com/watch?v=9Jry5-82I68&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb&index=6
+	https://www.youtube.com/watch?v=FNeL18KsWPc
+

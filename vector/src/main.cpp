@@ -69,6 +69,8 @@ class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {}
 # define DT Example
 # define TAG input_iterator_tag
 
+int TestAVL();
+
 /*
 input_iterator_tag;
 output_iterator_tag;
@@ -78,8 +80,7 @@ random_access_iterator_tag;
 */
 
 int main() {
-	N::map<int, int> m;
-
+	TestAVL();
 	return 0;
 }
 #endif /* CATCH_TEST_ENABLED */
