@@ -4,6 +4,7 @@
 # include <cstddef>
 # include "is_integral.hpp"
 # include "distance.hpp"
+# include "is_signed.hpp"
 # include <memory>
 
 namespace ft {
@@ -61,6 +62,14 @@ void swap (T& a, T& b) {
 template <typename T>
 const T& max(const T& a, const T& b) {
 	return a > b ? a : b;
+}
+
+template <typename T, \
+typename = typename ft::enable_if<ft::is_signed<T>::value, bool>::type>
+T abs(const T& a) {
+	if (a < 0)
+		return -a;
+	return a;
 }
 
 /*

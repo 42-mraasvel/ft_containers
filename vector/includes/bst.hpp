@@ -3,8 +3,10 @@
 
 # include <memory>
 # include "less.hpp"
+# include "utils.hpp"
 
 # include <iostream>
+# include <iomanip>
 
 template <typename T>
 void printValue(const T& val)
@@ -87,11 +89,13 @@ public:
 		return _M_insert(_root, value);
 	}
 
+
 	void print() const
 	{
-		std::cout << "CONTAINS:";
-		_M_applyPostfix(_root, printValue<T>);
-		std::cout << std::endl;
+		printNode(_root);
+		// std::cout << "CONTAINS:";
+		// _M_applyPostfix(_root, printValue<T>);
+		// std::cout << std::endl;
 	}
 
 
@@ -159,6 +163,31 @@ private:
 		_M_applyPostfix(node->left, f);
 		_M_applyPostfix(node->right, f);
 		f(node->value);
+	}
+
+	int calculateHeight(Node* node) const
+	{
+		if (node == NULL)
+			return -1;
+		return ft::max(calculateHeight(node->left),
+					calculateHeight(node->right)) + 1;
+	}
+
+	int calculateBalance(Node* node) const
+	{
+		return (calculateHeight(node->left) - calculateHeight(node->right));
+	}
+
+	void printNode(Node* node) const
+	{
+		if (node == NULL)
+			return;
+		std::cout	<< "VALUE(" << std::setw(2) << node->value
+					<< "), HEIGHT(" << calculateHeight(node)
+					<< "), BALANCE(" << calculateBalance(node) 
+					<< ")" << std::endl;
+		printNode(node->left);
+		printNode(node->right);
 	}
 
 };
