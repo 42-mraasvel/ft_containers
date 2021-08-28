@@ -8,12 +8,6 @@
 # include <iostream>
 # include <iomanip>
 
-template <typename T>
-void printValue(const T& val)
-{
-	std::cout << ' ' << val;
-}
-
 namespace ft
 {
 
@@ -34,14 +28,17 @@ private:
 	struct Node
 	{
 		Node()
-		: value(), left(NULL), right(NULL) {}
+		: value(), parent(NULL), left(NULL), right(NULL), height(0), balance(0) {}
 		Node(const T& value)
-		: value(value), left(NULL), right(NULL) {}
+		: value(value), parent(NULL), left(NULL), right(NULL), height(0), balance(0) {}
 		~Node() {}
 
 		T value;
+		Node* parent;
 		Node* left;
 		Node* right;
+		int height;
+		int balance;
 	private:
 		Node(const Node& from) {}
 	};
@@ -83,7 +80,7 @@ public:
 	{
 		if (_root == NULL)
 		{
-			_root = newNode(value);
+			_root = newNode(value, NULL);
 			return true;
 		}
 		return _M_insert(_root, value);
@@ -93,37 +90,49 @@ public:
 	void print() const
 	{
 		printNode(_root);
-		// std::cout << "CONTAINS:";
-		// _M_applyPostfix(_root, printValue<T>);
-		// std::cout << std::endl;
 	}
 
 
 private:
+
 	bool _M_insert(Node* node, const T& value)
 	{
 		if (node->value == value)
 			return false;
-
 		if (compare(value, node->value))
-			return _M_createLeaf(&node->left, value);
+			return _M_createLeaf(&node->left, value, node);
 		else
-			return _M_createLeaf(&node->right, value);
-
+			return _M_createLeaf(&node->right, value, node);
 	}
 
-	bool _M_createLeaf(Node** leaf, const T& value)
+	bool _M_createLeaf(Node** leaf, const T& value, Node* parent)
 	{
 		if (*leaf != NULL)
 			return  _M_insert(*leaf, value);
-		*leaf = newNode(value);
+		*leaf = newNode(value, parent);
+		_M_updateHeightBalance(parent);
 		return true;
 	}
 
-	Node* newNode(const T& value)
+	void _M_updateHeightBalance(Node* node)
+	{
+		if (node == NULL)
+			return;
+		node->height =	ft::max(
+							calculateHeight(node->left),
+							calculateHeight(node->right)
+						) + 1;
+		node->balance = calculateBalance(node);
+		_M_updateHeightBalance(node->parent);
+	}
+
+	Node* newNode(const T& value, Node* parent)
 	{
 		Node* node = _alloc.allocate(1);
 		_alloc.construct(node, value);
+		node->height = calculateHeight(node);
+		node->balance = calculateBalance(node);
+		node->parent = parent;
 		return node;
 	}
 
@@ -138,39 +147,11 @@ private:
 		_root = NULL;
 	}
 
-	void _M_applyPrefix(Node* node, void (*f)(const T& value)) const
-	{
-		if (node == NULL)
-			return;
-		f(node->value);
-		_M_applyPrefix(node->left, f);
-		_M_applyPrefix(node->right, f);
-	}
-
-	void _M_applyInfix(Node* node, void (*f)(const T& value)) const
-	{
-		if (node == NULL)
-			return;
-		_M_applyInfix(node->left, f);
-		f(node->value);
-		_M_applyInfix(node->right, f);
-	}
-
-	void _M_applyPostfix(Node* node, void (*f)(const T& value)) const
-	{
-		if (node == NULL)
-			return;
-		_M_applyPostfix(node->left, f);
-		_M_applyPostfix(node->right, f);
-		f(node->value);
-	}
-
 	int calculateHeight(Node* node) const
 	{
 		if (node == NULL)
 			return -1;
-		return ft::max(calculateHeight(node->left),
-					calculateHeight(node->right)) + 1;
+		return node->height;
 	}
 
 	int calculateBalance(Node* node) const
@@ -183,8 +164,8 @@ private:
 		if (node == NULL)
 			return;
 		std::cout	<< "VALUE(" << std::setw(2) << node->value
-					<< "), HEIGHT(" << calculateHeight(node)
-					<< "), BALANCE(" << calculateBalance(node) 
+					<< "), HEIGHT(" << (node)->height
+					<< "), BALANCE(" << (node)->balance
 					<< ")" << std::endl;
 		printNode(node->left);
 		printNode(node->right);

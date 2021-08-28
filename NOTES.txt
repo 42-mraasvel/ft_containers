@@ -24,32 +24,40 @@ BINARY TREE
 AVL TREES
 
 	COURSE:
-	https://www.youtube.com/watch?v=9Jry5-82I68&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb&index=6
-	https://www.youtube.com/watch?v=FNeL18KsWPc
+		https://www.youtube.com/watch?v=9Jry5-82I68&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb&index=6
+		https://www.youtube.com/watch?v=FNeL18KsWPc
 
-	SWE:
-	https://www.youtube.com/watch?v=vRwi_UcZGjU
+	Visualized:
+		https://www.cs.usfca.edu/~galles/visualization/AVLtree.html
 
 
+	Threshold: used to determine when to rebalance tree
 
-		Threshold: used to determine when to rebalance tree
+	Every node roots it's own subtree
+	Has a subtree to the left and to the right
 
-		Every node roots it's own subtree
-		Has a subtree to the left and to the right
+	Height:
+		H: -1 (EMPTY)
+		H:  0 (SINGLE NODE)
+		H: max(H(L), H(R)) + 1
+	
+	Balance:
+	
+		Balance(node) = Height(Left) - Height(Right)
 
-		Height:
-			H: -1 (EMPTY)
-			H:  0 (SINGLE NODE)
-			H: max(H(L), H(R)) + 1
-		
-		Balance:
-		
-			Balance(node) = Height(Left) - Height(Right)
+		Standard threshold = 1
+		Goal of AVL: keep |Balance(node)| <= Threshold
+	
+			LEFT-HEAVY: B(n) > 0 (positive balance)
+		RIGHT-HEAVY: B(n) < 0 (negative balance)
+	
+	Rotations:
 
-			Standard threshold = 1
-			Goal of AVL: keep |Balance(node)| <= Threshold
-		
-			 LEFT-HEAVY: B(n) > 0 (positive balance)
-			RIGHT-HEAVY: B(n) < 0 (negative balance)
-		
-		Rotations:
+		Rotations fix imbalance
+
+		Left-Heavy:
+			(1) Right rotation
+			(2) Left-Right rotation
+		Right-Heavy:
+			(1) Left rotation
+			(2) Left-Right rotation
