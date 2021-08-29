@@ -11,7 +11,7 @@
 namespace ft
 {
 
-template <typename T, typename Compare = ft::less<T>>
+template <typename T, typename Compare = ft::less<T> >
 class BSTree
 {
 public:

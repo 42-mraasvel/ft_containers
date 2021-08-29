@@ -64,9 +64,9 @@ const T& max(const T& a, const T& b) {
 	return a > b ? a : b;
 }
 
-template <typename T, \
-typename = typename ft::enable_if<ft::is_signed<T>::value, bool>::type>
-T abs(const T& a) {
+template <typename T>
+T abs(const T& a,
+typename ft::enable_if<ft::is_signed<T>::value, bool>::type = true) {
 	if (a < 0)
 		return -a;
 	return a;

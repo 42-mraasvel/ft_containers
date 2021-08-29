@@ -24,7 +24,6 @@ BINARY TREE
 AVL TREES
 
 	COURSE:
-		https://www.youtube.com/watch?v=9Jry5-82I68&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb&index=6
 		https://www.youtube.com/watch?v=FNeL18KsWPc
 
 	Visualized:
@@ -60,4 +59,28 @@ AVL TREES
 			(2) Left-Right rotation
 		Right-Heavy:
 			(1) Left rotation
-			(2) Left-Right rotation
+			(2) Right-Left rotation
+	
+	Insertion:
+
+		1. Standard BST insert
+		2. Fix AVL property
+
+		imbalance(x)
+			if (rightHeavy(x)) is RIGHT HEAVY
+				if (rightChild is rightHeavy or balanced) {
+					LR(x)
+				}
+				else {
+					RR(y)
+					LR(x)
+				}
+
+			else if (leftHeavy(x))
+				if (leftChild is leftHeavy or balanced) {
+					RR(x)
+				}
+				else {
+					LR(y)
+					RR(x)
+				}
