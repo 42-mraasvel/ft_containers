@@ -1,6 +1,8 @@
 #include "avl_tree.hpp"
 #include "bst.hpp"
 #include <iostream>
+#include <map>
+#include <utility>
 
 /*
 Rotation Tests:
@@ -34,6 +36,12 @@ Rotation Tests:
 		40
 		45
 
+	Insertions:
+		0
+		1
+		...
+		n 
+
 */
 
 int TestAVL()
@@ -42,18 +50,16 @@ int TestAVL()
 
 	std::cout << std::boolalpha;
 
-	tree.insert(41);
-	tree.insert(20);
-	tree.insert(65);
-	tree.insert(50);
-	tree.insert(11);
-	tree.insert(29);
-	tree.insert(26);
-	tree.insert(23);
+	std::map<int, int> m;
+
+
+
+	for (int i = 1000; i >= 0; --i)
+	{
+		tree.insert(i);
+		// m.insert(std::make_pair(i, i));
+	}
 
 	tree.print();
-
-	std::cout << ft::BSTree<int>::RED << std::endl;
-
 	return 0;
 }

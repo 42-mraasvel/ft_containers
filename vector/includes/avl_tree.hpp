@@ -16,7 +16,7 @@ class AvlTree
 public:
 	typedef T value_type;
 	typedef Compare compare_type;
-private:
+public:
 
 	struct Node
 	{
@@ -31,12 +31,13 @@ private:
 		{
 			*this = from;
 		}
+	
 		~Node() {}
 
 		Node& operator=(const Node& rhs)
 		{
 			if (this == &rhs)
-				return *this;	
+				return *this;
 			key = rhs.key;
 			left = rhs.left;
 			right = rhs.right;
@@ -60,12 +61,29 @@ private:
 
 public:
 
+	AvlTree()
+	: _root(NULL) {}
+	AvlTree(const AvlTree& from)
+	: _root(NULL) {}
+	~AvlTree()
+	{
+		clear();
+	}
+
+	AvlTree& operator=(const AvlTree& rhs)
+	{
+		return *this;
+	}
+
 	bool insert(const T& key)
 	{
 		if (!_root)
 			_root = _M_new_node(key, NULL);
 		else if (_M_insert_key(_root, key))
+		{
 			_M_update_node(_root);
+			_M_check_balance(_root);
+		}
 		else
 			return false;
 		return true;
@@ -76,29 +94,35 @@ public:
 		_M_print_node(_root);
 	}
 
+	void clear()
+	{
+		_M_destroy_tree(_root);
+	}
+
 private:
 
 	bool _M_insert_key(Node* node, const T& key)
 	{
-		Node** next;
+		if (node->key == key)
+			return false;
+
 		if (_compare(key, node->key))
-			next = &(node->left);
+			return _M_check_leaf(node->left, node, key);
 		else
-			next = &(node->right);
-		return _M_check_leaf(next, node, key);
+			return _M_check_leaf(node->right, node, key);
 	}
 
-	bool _M_check_leaf(Node** dest, Node* parent, const T& key)
+	bool _M_check_leaf(Node*& dest, Node* parent, const T& key)
 	{
-		if (*dest == NULL)
+		if (dest == NULL)
 		{
-			*dest = _M_new_node(key, parent);
+			dest = _M_new_node(key, parent);
 			return true;
 		}
-		if (_M_insert_key(*dest, key))
+		if (_M_insert_key(dest, key))
 		{
-			// Update height & balance!
-			_M_update_node(*dest);
+			_M_update_node(dest);
+			_M_check_balance(dest);
 			return true;
 		}
 		return false;
@@ -108,7 +132,6 @@ private:
 	{
 		_M_update_height(node);
 		_M_update_balance(node);
-		_M_check_balance(node);
 	}
 
 	void _M_update_height(Node* node)
@@ -144,15 +167,68 @@ private:
 		return node;
 	}
 
+	void _M_destroy_tree(Node* node)
+	{
+		if (node == NULL)
+			return;
+		_M_destroy_tree(node->left);
+		_M_destroy_tree(node->right);
+		delete node;
+	}
+
 /* ROTATIONS, PRESERVING AVL PROPERTY */
 
 	void _M_check_balance(Node* node)
 	{
-		if (ft::abs(node->balance) > 1)
+		if (node->balance > 1)
 		{
-			std::cout << "IMBALANCED(" << node->key << ")" << std::endl;
+			if (node->left->balance < 0)
+				_M_rotate_left(node->left);
+			_M_rotate_right(node);
+		}
+		else if (node->balance < -1)
+		{
+			if (node->right->balance > 0)
+				_M_rotate_right(node->right);
+			_M_rotate_left(node);
 		}
 	}
+
+	void _M_rotate_right(Node* x)
+	{
+		Node* y = x->left;
+		x->left = y->right;
+		y->right = x;
+		_M_rotate_update_nodes(x, y);
+	}
+
+	void _M_rotate_left(Node* x)
+	{
+		Node* y = x->right;
+		x->right = y->left;
+		y->left = x;
+		_M_rotate_update_nodes(x, y);
+	}
+
+	void _M_rotate_update_nodes(Node* x, Node* y)
+	{
+		_M_rotate_update_parent(x, y);
+		_M_update_node(x);
+		_M_update_node(y);
+	}
+
+	void _M_rotate_update_parent(Node* node, Node* replacement)
+	{
+		Node* parent = node->parent;
+		replacement->parent = parent;
+		if (parent == NULL)
+			_root = replacement;
+		else if (parent->left == node)
+			parent->left = replacement;
+		else
+			parent->right = replacement;
+	}
+
 
 /* UTIL FUNCTIONS */
 
