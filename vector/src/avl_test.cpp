@@ -1,8 +1,65 @@
 #include "avl_tree.hpp"
 #include "bst.hpp"
+#include "node_avl.hpp"
 #include <iostream>
 #include <map>
 #include <utility>
+#include <cassert>
+
+
+template <typename T>
+int calculateHeight(typename ft::AvlTree<T>::Node* node)
+{
+	if (node == NULL)
+		return -1;
+	
+	return ft::max(calculateHeight<T>(node->left), calculateHeight<T>(node->right)) + 1;
+}
+
+template <typename T>
+int calculateBalance(typename ft::AvlTree<T>::Node* node)
+{
+	return calculateHeight<T>(node->left) - calculateHeight<T>(node->right);
+}
+
+template <typename T>
+bool validNode(typename ft::AvlTree<T>::Node* node)
+{
+	int balance = calculateBalance<T>(node);
+	
+	assert(node->height == calculateHeight<T>(node));
+	assert(node->balance == balance);
+	assert(ft::abs(calculateBalance<T>(node)) <= 1);
+
+	if (node->left)
+	{
+		assert(node->left->parent == node);
+		assert(node->left->key < node->key);
+	}
+	
+	if (node->right)
+	{
+		assert(node->right->parent == node);
+		assert(node->right->key > node->key);
+	}
+
+	return true;
+}
+
+template <typename T>
+bool validAvl(typename ft::AvlTree<T>::Node* root)
+{
+	if (root == NULL)
+		return true;
+
+	if (!validAvl<T>(root->left))
+		return false;
+	if (!validNode<T>(root))
+		return false;
+	if (!validAvl<T>(root->right))
+		return false;
+	return true;
+}
 
 /*
 Rotation Tests:
@@ -44,22 +101,23 @@ Rotation Tests:
 
 */
 
+typedef ft::AvlTree<int> tree_type;
+typedef typename ft::AvlTree<int>::Node node_type;
+
 int TestAVL()
 {
-	ft::AvlTree<int> tree;
+	tree_type tree;
 
-	std::cout << std::boolalpha;
-
-	std::map<int, int> m;
-
-
-
-	for (int i = 1000; i >= 0; --i)
-	{
+	for (int i = 0; i < 10; ++i)
 		tree.insert(i);
-		// m.insert(std::make_pair(i, i));
-	}
 
-	tree.print();
+	tree_type::iterator it = tree.begin();
+
+	for (; it != tree.end(); ++it)
+		std::cout << *it << std::endl;
+
+
+	// tree.print();
+
 	return 0;
 }

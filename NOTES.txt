@@ -84,3 +84,14 @@ AVL TREES
 					LR(y)
 					RR(x)
 				}
+	Deletion:
+
+		if no child
+			return NULL
+		if one child
+			return child
+		if two children
+			swap predecessor of inorder (max of left subtree)
+			delete node in it's new location (can't have 2 children now)
+			update height (by going up to all parents)
+			check balance of CUR node, and up the callstack
