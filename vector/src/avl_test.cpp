@@ -1,6 +1,8 @@
 #include "avl_tree.hpp"
 #include "bst.hpp"
 #include "node_avl.hpp"
+#include "tree_avl.hpp"
+#include "map.hpp"
 #include <iostream>
 #include <map>
 #include <utility>
@@ -106,18 +108,7 @@ typedef typename ft::AvlTree<int>::Node node_type;
 
 int TestAVL()
 {
-	tree_type tree;
-
-	for (int i = 0; i < 10; ++i)
-		tree.insert(i);
-
-	tree_type::iterator it = tree.begin();
-
-	for (; it != tree.end(); ++it)
-		std::cout << *it << std::endl;
-
-
-	// tree.print();
+	ft::map<int, int> m;
 
 	return 0;
 }
