@@ -4,6 +4,7 @@
 # include "pair.hpp"
 # include "less.hpp"
 # include "reverse_iterator.hpp"
+# include "tree_avl.hpp"
 
 # include <memory> // std::allocator
 
@@ -31,6 +32,7 @@ public:
 	typedef Alloc										allocator_type;
 
 
+
 	typedef typename allocator_type::reference			reference;
 	typedef typename allocator_type::const_reference	const_reference;
 	typedef typename allocator_type::pointer			pointer;
@@ -45,27 +47,97 @@ public:
 	typedef ptrdiff_t difference_type;
 	typedef size_t size_type;
 
+private:
+	typedef TreeAVL<value_type, value_comp, allocator_type>	tree_type;
+
+/*
+
+
+************ TESTING PURPOSES, REMOVE ON TURNIN **********
+
+*/
+public:
+	typename tree_type::node_pointer root() {
+		return tree().root();
+	}
+
 public:
 /* Constructors / Destructor */
 
 	/* empty */
 	explicit map(const key_compare& key = key_compare(),
 	const allocator_type& alloc = allocator_type())
-	: _val_cmp(key) {}
+	: _tree(value_compare(key)) {
+		(void)alloc;
+	}
 
 	/* range */
 	template <class InputIterator>
 	map(InputIterator first, InputIterator last,
 	const key_compare& key = key_compare(),
 	const allocator_type& alloc = allocator_type())
-	: _val_cmp(key) {}
+	: _tree(value_compare(key)) {
+		while (first != last) {
+			tree().insert(*first);
+			++first;
+		}
+	}
 
 	/* copy */
-	map (const map& x) {}
+	map(const map& x) {}
+
+	~map() {
+		clear();
+	}
+
+/* Iterators */
+
+/* Capacity */
+
+/* Element Access */
+
+/* Modifiers */
+
+	/* single element */
+	// ft::pair<iterator, bool> insert(const value_type& val) {}
+
+	/* with hint */
+	// iterator insert(iterator position, const value_type& val) {}
+
+	/* range */
+	// template <class InputIterator>
+	// void insert(InputIterator first, InputIterator last) {}
+
+	// void erase(iterator position) {}
+
+	// size_type erase(const key_type& k) {}
+
+	// void erase(iterator first, iterator last) {}
+
+	void swap(map& x) {}
+
+	void clear() {
+		tree().clear();
+	}
 
 
+/* Observers */
+
+/* Operations */
+
+/* Private Member Functions */
 private:
-	value_compare _val_cmp;
+	tree_type& tree() {
+		return _tree;
+	}
+
+	const tree_type& tree() const {
+		return _tree;
+	}
+
+/* Private Member Variables */
+private:
+	tree_type _tree;
 
 };
 

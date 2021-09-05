@@ -9,57 +9,57 @@
 #include <cassert>
 
 
-template <typename T>
-int calculateHeight(typename ft::AvlTree<T>::Node* node)
-{
-	if (node == NULL)
-		return -1;
+// template <typename NodeType>
+// int calculateHeight(NodeType* node)
+// {
+// 	if (node == NULL)
+// 		return -1;
 	
-	return ft::max(calculateHeight<T>(node->left), calculateHeight<T>(node->right)) + 1;
-}
+// 	return ft::max(calculateHeight(node->left()), calculateHeight(node->right())) + 1;
+// }
 
-template <typename T>
-int calculateBalance(typename ft::AvlTree<T>::Node* node)
-{
-	return calculateHeight<T>(node->left) - calculateHeight<T>(node->right);
-}
+// template <typename NodeType>
+// int calculateBalance(NodeType* node)
+// {
+// 	return calculateHeight<node_type>(node->left()) - calculateHeight(node->right());
+// }
 
-template <typename T>
-bool validNode(typename ft::AvlTree<T>::Node* node)
-{
-	int balance = calculateBalance<T>(node);
+// template <typename NodeType>
+// bool validNode(NodeType* node)
+// {
+// 	int balance = calculateBalance<node_type>(node);
 	
-	assert(node->height == calculateHeight<T>(node));
-	assert(node->balance == balance);
-	assert(ft::abs(calculateBalance<T>(node)) <= 1);
+// 	assert(node->get_height() == calculateHeight<node_type>(node));
+	// assert(node->get_balance() == balance);
+	// assert(ft::abs(calculateBalance(node)) <= 1);
 
-	if (node->left)
-	{
-		assert(node->left->parent == node);
-		assert(node->left->key < node->key);
-	}
+	// if (node->left)
+	// {
+	// 	assert(node->left()->parent() == node);
+	// 	assert(node->left()->key().first < node->key().second);
+	// }
 	
-	if (node->right)
-	{
-		assert(node->right->parent == node);
-		assert(node->right->key > node->key);
-	}
+	// if (node->right)
+	// {
+	// 	assert(node->right()->parent() == node);
+	// 	assert(node->right()->key().first > node->key().second);
+	// }
 
-	return true;
-}
+// 	return true;
+// }
 
-template <typename T>
-bool validAvl(typename ft::AvlTree<T>::Node* root)
+template <typename NodeType>
+bool validAvl(NodeType* root)
 {
 	if (root == NULL)
 		return true;
 
-	if (!validAvl<T>(root->left))
+	if (!validAvl(root->left()))
 		return false;
-	if (!validNode<T>(root))
-		return false;
-	if (!validAvl<T>(root->right))
-		return false;
+	// if (!validNode<node_type>(root))
+	// 	return false;
+	// if (!validAvl<node_type>(root->right()))
+	// 	return false;
 	return true;
 }
 
@@ -103,12 +103,14 @@ Rotation Tests:
 
 */
 
-typedef ft::AvlTree<int> tree_type;
-typedef typename ft::AvlTree<int>::Node node_type;
+typedef ft::NodeAVL < ft::pair<const int, int> > node_type;
 
 int TestAVL()
 {
 	ft::map<int, int> m;
+
+	node_type* ptr = m.root();
+	validAvl<node_type>(ptr);
 
 	return 0;
 }
