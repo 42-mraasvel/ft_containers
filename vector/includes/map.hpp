@@ -66,7 +66,7 @@ public:
 
 	/* empty */
 	explicit map(const key_compare& key = key_compare(),
-	const allocator_type& alloc = allocator_type())
+				const allocator_type& alloc = allocator_type())
 	: _tree(value_compare(key)) {
 		(void)alloc;
 	}
@@ -74,8 +74,8 @@ public:
 	/* range */
 	template <class InputIterator>
 	map(InputIterator first, InputIterator last,
-	const key_compare& key = key_compare(),
-	const allocator_type& alloc = allocator_type())
+		const key_compare& key = key_compare(),
+		const allocator_type& alloc = allocator_type())
 	: _tree(value_compare(key)) {
 		while (first != last) {
 			tree().insert(*first);

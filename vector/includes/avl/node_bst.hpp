@@ -3,26 +3,26 @@
 
 namespace ft {
 
-template <typename T>
-class NodeBst {
+template <typename T, typename NodeType>
+class NodeBST {
 public:
 	typedef T key_type;
 
 public:
 /* Constructors */
-	NodeBst()
+	NodeBST()
 	: _parent(NULL), _left(NULL), _right(NULL) {}
 
-	NodeBst(const T& key)
+	NodeBST(const T& key)
 	: _key(key), _parent(NULL), _left(NULL), _right(NULL) {}
 
-	NodeBst(const NodeBst& node)
+	NodeBST(const NodeBST& node)
 	: _key(node.key()), _parent(node.parent()), _left(node.left()), _right(node.right()) {}
 
-	virtual ~NodeBst() {}
+	virtual ~NodeBST() {}
 
 /* Operators */
-	NodeBst& operator=(const NodeBst& rhs) {
+	NodeBST& operator=(const NodeBST& rhs) {
 		if (this == &rhs)
 			return *this;
 		key() = rhs.parent();
@@ -33,12 +33,12 @@ public:
 	}
 
 /* Public Member Functions */
-	NodeBst* next() {
+	NodeType* next() {
 		if (right())
 			return _M_find_min(right());
 
-		NodeBst* current = parent();
-		NodeBst* prev = this;
+		NodeType* current = parent();
+		NodeType* prev = this;
 		while (current) {
 			if (prev == current->left)
 				return current;
@@ -48,12 +48,12 @@ public:
 		return NULL;
 	}
 
-	NodeBst* prev() {
+	NodeType* prev() {
 		if (left())
 			return _M_find_max(left());
 
-		NodeBst* current = parent();
-		NodeBst* prev = this;
+		NodeType* current = parent();
+		NodeType* prev = this;
 		while (current) {
 			if (prev == current->right)
 				return current;
@@ -72,33 +72,33 @@ public:
 		return _key;
 	}
 
-	NodeBst*& parent() {
+	NodeType*& parent() {
 		return _parent;
 	}
 
-	const NodeBst*& parent() const {
+	const NodeType*& parent() const {
 		return _parent;
 	}
 
-	NodeBst*& left() {
+	NodeType*& left() {
 		return _left;
 	}
 
-	const NodeBst*& left() const {
+	const NodeType*& left() const {
 		return _left;
 	}
 
-	NodeBst*& right() {
+	NodeType*& right() {
 		return _right;
 	}
 
-	const NodeBst*& right() const {
+	const NodeType*& right() const {
 		return _right;
 	}
 
 private:
 /* Private Utility Member Functions */
-	NodeBst* _M_find_max(NodeBst* node) {
+	NodeType* _M_find_max(NodeType* node) {
 		if (!node)
 			return NULL;
 		while (node->right)
@@ -106,7 +106,7 @@ private:
 		return node;
 	}
 
-	NodeBst* _M_find_min(NodeBst* node) {
+	NodeType* _M_find_min(NodeType* node) {
 		if (!node)
 			return NULL;
 		while (node->left)
@@ -117,9 +117,9 @@ private:
 /* Member Variables */
 protected:
 	key_type _key;
-	NodeBst* _parent;
-	NodeBst* _left;
-	NodeBst* _right;
+	NodeType* _parent;
+	NodeType* _left;
+	NodeType* _right;
 
 };
 

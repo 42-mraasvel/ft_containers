@@ -6,17 +6,17 @@
 namespace ft {
 
 template <typename T>
-class NodeAVL : public NodeBst<T> {
+class NodeAVL : public NodeBST<T, NodeAVL<T> > {
 /* Member Types */
 private:
-	typedef NodeBst<T> parent;
+	typedef NodeBST<T, NodeAVL<T> > parent_t;
 
 /* Constructors / Destructors */
 public:
 	NodeAVL() {}
 
 	NodeAVL(const NodeAVL& from)
-	: _height(from.get_height()), parent(from) {}
+	: _height(from.get_height()), parent_t(from) {}
 
 	~NodeAVL() {}
 
@@ -25,13 +25,13 @@ public:
 		if (this == &rhs)
 			return *this;
 		_height = rhs.height;
-		parent::operator=(rhs);
+		parent_t::operator=(rhs);
 		return *this;
 	}
 
 /* Setters / Getters */
 	void update_height() {
-		_height = ft::max(_M_calculate_height(this->left()), _M_calculate_height(this->right())) + 1;
+		_height = ft::max(_M_calculate_height(this->_left), _M_calculate_height(this->_right)) + 1;
 	}
 
 	int get_height() const {
@@ -39,7 +39,7 @@ public:
 	}
 
 	int get_balance() const {
-		return _M_calculate_height(this->left()) - _M_calculate_height(this->right());
+		return _M_calculate_height(this->_left) - _M_calculate_height(this->_right);
 	}
 
 /* Private Member Functions */

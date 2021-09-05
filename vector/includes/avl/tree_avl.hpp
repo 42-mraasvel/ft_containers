@@ -54,20 +54,87 @@ public:
 
 /* Public Member Functions */
 	node_pointer insert(const value_type& val) {
-		return _M_insert(val);
+		_M_insert(_root, val, NULL);
+		return _last_node;
+	}
+
+	size_type size() const {
+		return _size;
 	}
 
 	void clear() {}
 
 /* Private Member Functions */
 private:
-	node_pointer _M_new_node(const value_type& val) {
+	node_pointer _M_new_node(const value_type& val) const {
 		node_pointer node = _alloc.allocate(1);
 		_alloc.construct(node, node_type(val));
 		return node;
 	}
 
-/* AVL Rotations */
+	node_pointer _M_new_node_update(const value_type& val, node_pointer parent) {
+		_last_node = _M_new_node(val);
+		_last_node->parent = parent;
+		_M_size_add(1);
+		return _last_node;
+	}
+
+/* Utils */
+
+	void _M_size_add(size_type n) {
+		_size += n;
+	}
+
+/*
+AVL insertion
+	Complexity: O(n log n)
+	1. BST insert: O (n log n)
+	2. Preserve AVL property: O(1)
+	return: iterator to new node (or node if val was already present)
+*/
+
+	node_pointer _M_insert(node_pointer node, const value_type& val, node_pointer parent) {
+		if (node == NULL)
+			return _M_new_node_update(val, parent);
+
+		if (node->key == val) {
+			_last_node = node;
+			return node;
+		}
+
+		if (value_comp(val, node->key))
+			node->left = _M_insert(node->left, val, node);
+		else
+			node->right = _M_insert(node->right, val, node);
+
+		node->update_height();
+		_M_check_balance(node);
+		return node;
+	}
+
+
+/*
+AVL Rotations
+	Rebalance tree using rotations when abs(balance) > 1
+	Complexity: O(1) pointer swaps
+Resource:
+	https://www.youtube.com/watch?v=FNeL18KsWPc
+*/
+	void _M_check_balance(node_pointer node) {
+		if (node->balance > 1)
+		{
+			if (node->left->balance < 0)
+				_M_rotate_left(node->left);
+			_M_rotate_right(node);
+		}
+		else if (node->balance < -1)
+		{
+			if (node->right->balance > 0)
+				_M_rotate_right(node->right);
+			_M_rotate_left(node);
+		}
+	}
+
 	void _M_rotate_left(node_pointer x) {
 		node_pointer y  = x->right;
 		y->parent = x->parent;
@@ -102,6 +169,8 @@ private:
 	allocator_node _alloc;
 	value_compare _compare;
 	size_type _size;
+
+	node_pointer _last_node;
 
 };
 
