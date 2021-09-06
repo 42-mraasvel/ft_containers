@@ -3,10 +3,15 @@
 #include "node_avl.hpp"
 #include "tree_avl.hpp"
 #include "map.hpp"
+#include "pair.hpp"
+#include "make_pair.hpp"
+#include "iterator_avl.hpp"
+#include "iterator_traits.hpp"
 #include <iostream>
 #include <map>
 #include <utility>
 #include <cassert>
+#include <vector>
 
 
 template <typename T>
@@ -15,13 +20,13 @@ int calculateHeight(ft::NodeAVL<T>* node)
 	if (node == NULL)
 		return -1;
 	
-	return ft::max(calculateHeight(node->left()), calculateHeight(node->right())) + 1;
+	return ft::max(calculateHeight(node->left), calculateHeight(node->right)) + 1;
 }
 
 template <typename T>
 int calculateBalance(ft::NodeAVL<T>* node)
 {
-	return calculateHeight(node->left()) - calculateHeight(node->right());
+	return calculateHeight(node->left) - calculateHeight(node->right);
 }
 
 template <typename T>
@@ -33,16 +38,16 @@ bool validNode(ft::NodeAVL<T>* node)
 	assert(node->get_balance() == balance);
 	assert(ft::abs(calculateBalance(node)) <= 1);
 
-	if (node->left())
+	if (node->left)
 	{
-		assert(node->left()->parent() == node);
-		assert(node->left()->key().first < node->key().second);
+		assert(node->left->parent == node);
+		assert(node->left->key.first < node->key.first);
 	}
 	
-	if (node->right())
+	if (node->right)
 	{
-		assert(node->right()->parent() == node);
-		assert(node->right()->key().first > node->key().second);
+		assert(node->right->parent == node);
+		assert(node->right->key.first > node->key.first);
 	}
 
 	return true;
@@ -54,13 +59,30 @@ bool validAvl(ft::NodeAVL<T>* root)
 	if (root == NULL)
 		return true;
 
-	if (!validAvl(root->left()))
+	if (!validAvl(root->left))
 		return false;
 	if (!validNode(root))
 		return false;
-	if (!validAvl(root->right()))
+	if (!validAvl(root->right))
 		return false;
 	return true;
+}
+
+template <typename T>
+void printNode(ft::NodeAVL<T>* node) {
+	std::cout << "VAL(" << node->key.first << "), HEIGHT("
+	<< node->get_height() << "), BALANCE(" << node->get_balance() << ")"
+	<< std::endl;
+}
+
+template <typename T>
+void printTree(ft::NodeAVL<T>* root) {
+	if (root == NULL)
+		return;
+
+	printNode(root);
+	printTree(root->left);
+	printTree(root->right);
 }
 
 /*
@@ -107,13 +129,22 @@ typedef ft::NodeAVL < ft::pair<const int, int> > node_type;
 
 int TestAVL()
 {
+	std::cout << std::boolalpha;
 	ft::map<int, int> m;
 
+	for (int i = 10; i > 0; --i) {
+		m.insert(ft::make_pair(i, i));
+	}
 
+	std::map<int, int> c;
+	c.insert(std::make_pair(1, 1));
 
 	/* CONFIRM AVL */
 	node_type* ptr = m.root();
+	printTree(ptr);
+	std::cout << "SIZE(" << m.size() << ")" << std::endl;
 	validAvl(ptr);
+
 
 	return 0;
 }

@@ -2,6 +2,7 @@
 # define TREE_AVL_HPP
 
 # include "node_avl.hpp"
+# include "iterator_avl.hpp"
 
 # include <cstddef>
 
@@ -20,10 +21,13 @@ public:
 	typedef Alloc														allocator_type;
 	typedef typename allocator_type::template rebind<node_type>::other	allocator_node;
 
-	typedef typename allocator_node::pointer		node_pointer;
-	typedef typename allocator_node::const_pointer	const_node_pointer;
-	typedef typename allocator_node::pointer		node_reference;
-	typedef typename allocator_node::const_pointer	const_node_reference;
+	typedef typename allocator_node::pointer							node_pointer;
+	typedef typename allocator_node::const_pointer						const_node_pointer;
+	typedef typename allocator_node::pointer							node_reference;
+	typedef typename allocator_node::const_pointer						const_node_reference;
+
+	typedef IteratorAVL<T> iterator;
+	typedef const iterator const_iterator;
 
 /*
 
@@ -45,7 +49,9 @@ public:
 	: _root(NULL), _compare(c), _size(0) {}
 	TreeAVL(const TreeAVL& from) {}
 
-	~TreeAVL() {}
+	~TreeAVL() {
+		clear();
+	}
 
 /* Operators */
 	TreeAVL& operator=(const TreeAVL& rhs) {
@@ -54,25 +60,49 @@ public:
 
 /* Public Member Functions */
 	node_pointer insert(const value_type& val) {
-		_M_insert(_root, val, NULL);
+		_root = _M_insert(_root, val, NULL);
 		return _last_node;
+	}
+
+	size_type erase(const value_type& val) {
+		size_type old_size = size();
+
+		return old_size - size();
 	}
 
 	size_type size() const {
 		return _size;
 	}
 
-	void clear() {}
+	size_type max_size() const {
+		return _alloc.max_size();
+	}
+
+	void clear() {
+		_M_clear_tree(_root);
+		_root = NULL;
+		_size = 0;
+	}
+
+/* Iterators */
+
+	iterator begin() {
+		return iterator(_root);
+	}
+
+	const_iterator begin() const {
+		return iterator(_root);
+	}
 
 /* Private Member Functions */
 private:
-	node_pointer _M_new_node(const value_type& val) const {
+	node_pointer _M_new_node(const value_type& val) {
 		node_pointer node = _alloc.allocate(1);
 		_alloc.construct(node, node_type(val));
 		return node;
 	}
 
-	node_pointer _M_new_node_update(const value_type& val, node_pointer parent) {
+	node_pointer _M_new_node_update_tree(const value_type& val, node_pointer parent) {
 		_last_node = _M_new_node(val);
 		_last_node->parent = parent;
 		_M_size_add(1);
@@ -95,21 +125,21 @@ AVL insertion
 
 	node_pointer _M_insert(node_pointer node, const value_type& val, node_pointer parent) {
 		if (node == NULL)
-			return _M_new_node_update(val, parent);
+			return _M_new_node_update_tree(val, parent);
 
-		if (node->key == val) {
+		if (_compare(val, node->key)) {
+			node->left = _M_insert(node->left, val, node);
+		}
+		else if (_compare(node->key, val)) {
+			node->right = _M_insert(node->right, val, node);
+		}
+		else {
 			_last_node = node;
 			return node;
 		}
 
-		if (value_comp(val, node->key))
-			node->left = _M_insert(node->left, val, node);
-		else
-			node->right = _M_insert(node->right, val, node);
-
 		node->update_height();
-		_M_check_balance(node);
-		return node;
+		return _M_check_balance(node);
 	}
 
 
@@ -120,29 +150,36 @@ AVL Rotations
 Resource:
 	https://www.youtube.com/watch?v=FNeL18KsWPc
 */
-	void _M_check_balance(node_pointer node) {
-		if (node->balance > 1)
-		{
-			if (node->left->balance < 0)
+	node_pointer _M_check_balance(node_pointer node) {
+		int balance = node->get_balance();
+		if (balance > 1) {
+			if (node->left->get_balance() < 0) {
 				_M_rotate_left(node->left);
+			}
 			_M_rotate_right(node);
 		}
-		else if (node->balance < -1)
-		{
-			if (node->right->balance > 0)
+		else if (balance < -1) {
+			if (node->right->get_balance() > 0) {
 				_M_rotate_right(node->right);
+			}
 			_M_rotate_left(node);
 		}
+		else {
+			return node;
+		}
+		return node->parent;
 	}
 
 	void _M_rotate_left(node_pointer x) {
 		node_pointer y  = x->right;
 		y->parent = x->parent;
-		if (y->parent == NULL)
+		if (y->parent == NULL) {
 			_root = y;
+		}
 		x->right = y->left;
-		if (x->right)
+		if (x->right) {
 			x->right->parent = x;
+		}
 		x->parent = y;
 		y->left = x;
 		x->update_height();
@@ -163,6 +200,23 @@ Resource:
 		y->update_height();
 	}
 
+/*
+	Clean up, deletion
+*/
+
+	void _M_clear_tree(node_pointer node) {
+		if (node == NULL)
+			return;
+		_M_clear_tree(node->left);
+		_M_clear_tree(node->right);
+		_M_delete_node(node);
+	}
+
+	void _M_delete_node(node_pointer node) {
+		_alloc.destroy(node);
+		_alloc.deallocate(node, 1);
+	}
+
 /* Private Member Variables */
 private:
 	node_pointer _root;
@@ -171,10 +225,10 @@ private:
 	size_type _size;
 
 	node_pointer _last_node;
+	node_pointer min;
 
 };
 
 }
-
 
 #endif /* TREE_AVL_HPP */

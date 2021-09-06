@@ -11,13 +11,13 @@ public:
 public:
 /* Constructors */
 	NodeBST()
-	: _parent(NULL), _left(NULL), _right(NULL) {}
+	: parent(NULL), left(NULL), right(NULL) {}
 
-	NodeBST(const T& key)
-	: _key(key), _parent(NULL), _left(NULL), _right(NULL) {}
+	NodeBST(const key_type& key)
+	: key(key), parent(NULL), left(NULL), right(NULL) {}
 
 	NodeBST(const NodeBST& node)
-	: _key(node.key()), _parent(node.parent()), _left(node.left()), _right(node.right()) {}
+	: key(node.key), parent(node.parent), left(node.left), right(node.right) {}
 
 	virtual ~NodeBST() {}
 
@@ -25,101 +25,76 @@ public:
 	NodeBST& operator=(const NodeBST& rhs) {
 		if (this == &rhs)
 			return *this;
-		key() = rhs.parent();
-		parent() = rhs.parent();
-		left() = rhs.left();
-		right() = rhs.right();
+		key = rhs.parent;
+		parent = rhs.parent;
+		left = rhs.left;
+		right = rhs.right;
 		return *this;
 	}
 
 /* Public Member Functions */
 	NodeType* next() {
-		if (right())
-			return _M_find_min(right());
-
-		NodeType* current = parent();
-		NodeType* prev = this;
-		while (current) {
-			if (prev == current->left)
-				return current;
-			prev = current;
-			current = current->parent();
+		if (right) {
+			return _M_find_min(right);
 		}
-		return NULL;
-	}
 
-	NodeType* prev() {
-		if (left())
-			return _M_find_max(left());
-
-		NodeType* current = parent();
+		NodeType* current = parent;
 		NodeType* prev = this;
 		while (current) {
-			if (prev == current->right)
+			if (prev == current->left) {
 				return current;
+			}
 			prev = current;
 			current = current->parent;
 		}
 		return NULL;
 	}
 
-/* Getters */
-	key_type& key() {
-		return _key;
-	}
+	NodeType* prev() {
+		if (left) {
+			return _M_find_max(left);
+		}
 
-	const key_type& key() const {
-		return _key;
-	}
-
-	NodeType*& parent() {
-		return _parent;
-	}
-
-	const NodeType*& parent() const {
-		return _parent;
-	}
-
-	NodeType*& left() {
-		return _left;
-	}
-
-	const NodeType*& left() const {
-		return _left;
-	}
-
-	NodeType*& right() {
-		return _right;
-	}
-
-	const NodeType*& right() const {
-		return _right;
+		NodeType* current = parent;
+		NodeType* prev = this;
+		while (current) {
+			if (prev == current->right) {
+				return current;
+			}
+			prev = current;
+			current = current->parent;
+		}
+		return NULL;
 	}
 
 private:
 /* Private Utility Member Functions */
-	NodeType* _M_find_max(NodeType* node) {
-		if (!node)
+	static NodeType* _M_find_max(NodeType* node) {
+		if (!node) {
 			return NULL;
-		while (node->right)
+		}
+		while (node->right) {
 			node = node->right;
+		}
 		return node;
 	}
 
-	NodeType* _M_find_min(NodeType* node) {
-		if (!node)
+	static NodeType* _M_find_min(NodeType* node) {
+		if (!node) {
 			return NULL;
-		while (node->left)
+		}
+		while (node->left) {
 			node = node->left;
+		}
 		return node;
 	}
 
 /* Member Variables */
-protected:
-	key_type _key;
-	NodeType* _parent;
-	NodeType* _left;
-	NodeType* _right;
+public:
+	key_type key;
+	NodeType* parent;
+	NodeType* left;
+	NodeType* right;
 
 };
 

@@ -10,13 +10,18 @@ class NodeAVL : public NodeBST<T, NodeAVL<T> > {
 /* Member Types */
 private:
 	typedef NodeBST<T, NodeAVL<T> > parent_t;
+	typedef typename parent_t::key_type key_type;
 
 /* Constructors / Destructors */
 public:
-	NodeAVL() {}
+	NodeAVL()
+	: _height(0) {}
 
 	NodeAVL(const NodeAVL& from)
-	: _height(from.get_height()), parent_t(from) {}
+	: parent_t(from), _height(from.get_height()) {}
+
+	NodeAVL(const key_type& key)
+	: parent_t(key), _height(0) {}
 
 	~NodeAVL() {}
 
@@ -31,7 +36,7 @@ public:
 
 /* Setters / Getters */
 	void update_height() {
-		_height = ft::max(_M_calculate_height(this->_left), _M_calculate_height(this->_right)) + 1;
+		_height = ft::max(_M_calculate_height(this->left), _M_calculate_height(this->right)) + 1;
 	}
 
 	int get_height() const {
@@ -39,7 +44,7 @@ public:
 	}
 
 	int get_balance() const {
-		return _M_calculate_height(this->_left) - _M_calculate_height(this->_right);
+		return _M_calculate_height(this->left) - _M_calculate_height(this->right);
 	}
 
 /* Private Member Functions */

@@ -12,7 +12,7 @@ struct binary_function {
 
 template <class T>
 struct less : public binary_function<T, T, bool> {
-	bool operator() (const T& x, const T& y) {
+	bool operator() (const T& x, const T& y) const {
 		return x < y;
 	}
 };

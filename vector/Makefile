@@ -45,7 +45,7 @@ CXXFLAGS = -Wall -Wextra -Werror
 UNUSED_FLAGS := -Wno-unused -Wno-unused-parameter
 SANITIZER_FLAGS := -fsanitize=address
 CXXFLAGS += $(UNUSED_FLAGS) -g3
-# CXXFLAGS += $(SANITIZER_FLAGS)
+CXXFLAGS += $(SANITIZER_FLAGS)
 
 
 ifeq ($(shell uname -s),Linux)

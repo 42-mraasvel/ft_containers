@@ -38,17 +38,19 @@ public:
 	typedef typename allocator_type::pointer			pointer;
 	typedef typename allocator_type::const_pointer		const_pointer;
 
-	// iterator
-	// const_iterator
-	// typedef ft::reverse_iterator<iterator>			reverse_iterator;
-	// typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+private:
+	typedef TreeAVL<value_type, value_comp, allocator_type>	tree_type;
+
+public:
+	typedef typename tree_type::iterator iterator;
+	typedef typename tree_type::const_iterator const_iterator;
+	typedef ft::reverse_iterator<iterator>			reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 	// typedef iterator_traits<iterator>::difference_type	difference_type;
 	typedef ptrdiff_t difference_type;
 	typedef size_t size_type;
 
-private:
-	typedef TreeAVL<value_type, value_comp, allocator_type>	tree_type;
 
 /*
 
@@ -86,13 +88,35 @@ public:
 	/* copy */
 	map(const map& x) {}
 
-	~map() {
-		clear();
-	}
+	~map() {}
 
 /* Iterators */
 
+	iterator begin() {
+		return _tree.begin();
+	}
+
+	const_iterator begin() const {
+		return _tree.begin();
+	}
+
+	iterator end() {
+		return _tree.end();
+	}
+
 /* Capacity */
+
+	bool empty() const {
+		return _tree.size() == 0;
+	}
+
+	size_type size() const {
+		return _tree.size();
+	}
+	
+	size_type max_size() const {
+		return _tree.max_size();
+	}
 
 /* Element Access */
 
@@ -100,6 +124,11 @@ public:
 
 	/* single element */
 	// ft::pair<iterator, bool> insert(const value_type& val) {}
+	bool insert(const value_type& val) {
+		size_type old_size = size();
+		_tree.insert(val);
+		return old_size != size();
+	}
 
 	/* with hint */
 	// iterator insert(iterator position, const value_type& val) {}
