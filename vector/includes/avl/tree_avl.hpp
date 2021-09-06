@@ -40,13 +40,21 @@ public:
 		return _root;
 	}
 
+	node_pointer max() {
+		return _max_ptr;
+	}
+
+	node_pointer min() {
+		return _min_ptr;
+	}
+
 /* Constructors / Destructor */
 private:
 	TreeAVL()
 	: _root(NULL), _size(0) {}
 public:
 	TreeAVL(const Compare& c)
-	: _root(NULL), _compare(c), _size(0) {}
+	: _root(NULL), _compare(c), _size(0), _min_ptr(NULL), _max_ptr(NULL) {}
 	TreeAVL(const TreeAVL& from) {}
 
 	~TreeAVL() {
@@ -61,7 +69,8 @@ public:
 /* Public Member Functions */
 	node_pointer insert(const value_type& val) {
 		_root = _M_insert(_root, val, NULL);
-		return _last_node;
+		_M_check_min_max();
+		return _node_last_changed;
 	}
 
 	size_type erase(const value_type& val) {
@@ -85,13 +94,20 @@ public:
 	}
 
 /* Iterators */
-
 	iterator begin() {
-		return iterator(_root);
+		return _M_create_iterator(_min_ptr);
 	}
 
 	const_iterator begin() const {
-		return iterator(_root);
+		return _M_create_iterator(_min_ptr);
+	}
+
+	iterator end() {
+		return _M_create_iterator(NULL);
+	}
+
+	const_iterator end() const {
+		return _M_create_iterator(NULL);
 	}
 
 /* Private Member Functions */
@@ -103,16 +119,30 @@ private:
 	}
 
 	node_pointer _M_new_node_update_tree(const value_type& val, node_pointer parent) {
-		_last_node = _M_new_node(val);
-		_last_node->parent = parent;
+		_node_last_changed = _M_new_node(val);
+		_node_last_changed->parent = parent;
 		_M_size_add(1);
-		return _last_node;
+		return _node_last_changed;
+	}
+
+	iterator _M_create_iterator(node_pointer ptr) {
+		return iterator(ptr, _max_ptr);
 	}
 
 /* Utils */
 
 	void _M_size_add(size_type n) {
 		_size += n;
+	}
+
+	void _M_check_min_max() {
+		if (_min_ptr == NULL || _compare(_node_last_changed->key, _min_ptr->key)) {
+			_min_ptr = _node_last_changed;
+		}
+
+		if (_max_ptr == NULL || _compare(_max_ptr->key, _node_last_changed->key)) {
+			_max_ptr = _node_last_changed;
+		}
 	}
 
 /*
@@ -134,7 +164,7 @@ AVL insertion
 			node->right = _M_insert(node->right, val, node);
 		}
 		else {
-			_last_node = node;
+			_node_last_changed = node;
 			return node;
 		}
 
@@ -224,8 +254,9 @@ private:
 	value_compare _compare;
 	size_type _size;
 
-	node_pointer _last_node;
-	node_pointer min;
+	node_pointer _node_last_changed;
+	node_pointer _min_ptr;
+	node_pointer _max_ptr;
 
 };
 

@@ -63,6 +63,14 @@ public:
 		return tree().root();
 	}
 
+	typename tree_type::node_pointer max() {
+		return tree().max();
+	}
+
+	typename tree_type::node_pointer min() {
+		return tree().min();
+	}
+
 public:
 /* Constructors / Destructor */
 

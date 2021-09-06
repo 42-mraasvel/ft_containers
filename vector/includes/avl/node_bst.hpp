@@ -37,28 +37,39 @@ public:
 		if (right) {
 			return _M_find_min(right);
 		}
+		return _M_next_node(parent, this);
+	}
 
-		NodeType* current = parent;
-		NodeType* prev = this;
-		while (current) {
-			if (prev == current->left) {
-				return current;
-			}
-			prev = current;
-			current = current->parent;
+	const NodeType* next() const {
+		if (right) {
+			return _M_find_min(right);
 		}
-		return NULL;
+		return _M_next_node(parent, this);
 	}
 
 	NodeType* prev() {
 		if (left) {
 			return _M_find_max(left);
 		}
+		return _M_prev_node(parent, this);
+	}
 
+	const NodeType* prev() const {
+		if (left) {
+			return _M_find_max(left);
+		}
+		return _M_prev_node(parent, this);
+	}
+
+private:
+/* Private Utility Member Functions */
+
+	static NodeType* _M_next_node(NodeType* parent, const NodeBST* this_ptr) {
 		NodeType* current = parent;
-		NodeType* prev = this;
+		const NodeType* prev = NULL;
 		while (current) {
-			if (prev == current->right) {
+			if ((prev == current->left && prev != NULL) || (prev == NULL && current->left == this_ptr)) {
+				std::cout << current->left << ", " << current->right << std::endl;
 				return current;
 			}
 			prev = current;
@@ -67,8 +78,20 @@ public:
 		return NULL;
 	}
 
-private:
-/* Private Utility Member Functions */
+	static NodeType* _M_prev_node(NodeType* parent, const NodeBST* this_ptr) {
+		NodeType* current = parent;
+		const NodeType* prev = NULL;
+		while (current) {
+			if ((prev == current->right && prev != NULL) || (prev == NULL && current->right == this_ptr)) {
+				return current;
+			}
+			prev = current;
+			current = current->parent;
+		}
+		return NULL;
+	}
+
+
 	static NodeType* _M_find_max(NodeType* node) {
 		if (!node) {
 			return NULL;

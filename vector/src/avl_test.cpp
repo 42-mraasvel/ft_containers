@@ -132,12 +132,26 @@ int TestAVL()
 	std::cout << std::boolalpha;
 	ft::map<int, int> m;
 
-	for (int i = 10; i > 0; --i) {
+	for (int i = 0; i < 10; ++i) {
 		m.insert(ft::make_pair(i, i));
 	}
 
-	std::map<int, int> c;
-	c.insert(std::make_pair(1, 1));
+	ft::map<int, int>::iterator it = m.begin();
+	ft::map<int, int>::iterator ite = m.end();
+
+	for (int i = 0; i < 9; ++i) {
+		std::cout << it->first << std::endl;
+		++it;
+	}
+	++it;
+	std::cout << it.is_end() << std::endl;
+	// std::cout << it.ptr() << std::endl;
+	// std::cout << (void*)m.max() << std::endl;
+	// std::cout << it->first << std::endl;
+
+	// std::cout << "MAX: " << m.max()->key.first << std::endl;
+	// std::cout << "MIN: " << m.min()->key.first << std::endl;
+
 
 	/* CONFIRM AVL */
 	node_type* ptr = m.root();
