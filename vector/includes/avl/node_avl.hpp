@@ -11,6 +11,7 @@ class NodeAVL : public NodeBST<T, NodeAVL<T> > {
 private:
 	typedef NodeBST<T, NodeAVL<T> > parent_t;
 	typedef typename parent_t::key_type key_type;
+	typedef typename parent_t::node_pointer node_pointer;
 
 /* Constructors / Destructors */
 public:
@@ -24,6 +25,8 @@ public:
 	: parent_t(key), _height(0) {}
 
 	~NodeAVL() {}
+
+public:
 
 /* Operators */
 	NodeAVL& operator=(const NodeAVL& rhs) {
@@ -45,6 +48,11 @@ public:
 
 	int get_balance() const {
 		return _M_calculate_height(this->left) - _M_calculate_height(this->right);
+	}
+
+	static void swap(node_pointer a, node_pointer b) {
+		ft::swap(a->_height, b->_height);
+		parent_t::swap(a, b);
 	}
 
 /* Private Member Functions */

@@ -164,7 +164,7 @@ public:
 		}
 
 		pointer temp = _allocate(n);
-		if (size() > 0) {
+		if (capacity() > 0) {
 			_initialize_mem(temp, begin(), end());
 			_deallocate();
 		}

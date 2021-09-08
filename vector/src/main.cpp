@@ -80,7 +80,9 @@ random_access_iterator_tag;
 */
 
 int main() {
-	TestAVL();
+	ft::vector<int> m(6);
+
+	// m.assign(7, 7);
 	return 0;
 }
 #endif /* CATCH_TEST_ENABLED */

@@ -3,6 +3,7 @@
 #include "node_avl.hpp"
 #include "tree_avl.hpp"
 #include "map.hpp"
+#include "vector.hpp"
 #include "pair.hpp"
 #include "make_pair.hpp"
 #include "iterator_avl.hpp"
@@ -127,38 +128,40 @@ Rotation Tests:
 
 typedef ft::NodeAVL < ft::pair<const int, int> > node_type;
 
+template <typename T>
+class TestNode {
+public:
+	TestNode() {}
+	TestNode(const TestNode& from)
+	: value(from.value) {}
+	virtual ~TestNode() {}
+
+	TestNode& operator=(const TestNode& rhs) {
+		value = rhs.value;
+		return *this;
+	}
+
+	void Lmao() {
+		std::cout << "DOING STUFF" << std::endl;
+	}
+
+private:
+	T value;
+	TestNode* left;
+	TestNode* right;
+	TestNode* parent;
+	int height;
+};
+
 int TestAVL()
 {
-	std::cout << std::boolalpha;
-	ft::map<int, int> m;
-
-	for (int i = 0; i < 10; ++i) {
-		m.insert(ft::make_pair(i, i));
-	}
-
-	ft::map<int, int>::iterator it = m.begin();
-	ft::map<int, int>::iterator ite = m.end();
-
-	for (int i = 0; i < 9; ++i) {
-		std::cout << it->first << std::endl;
-		++it;
-	}
-	++it;
-	std::cout << it.is_end() << std::endl;
-	// std::cout << it.ptr() << std::endl;
-	// std::cout << (void*)m.max() << std::endl;
-	// std::cout << it->first << std::endl;
-
-	// std::cout << "MAX: " << m.max()->key.first << std::endl;
-	// std::cout << "MIN: " << m.min()->key.first << std::endl;
 
 
 	/* CONFIRM AVL */
-	node_type* ptr = m.root();
-	printTree(ptr);
-	std::cout << "SIZE(" << m.size() << ")" << std::endl;
-	validAvl(ptr);
-
+	// node_type* ptr = m.root();
+	// printTree(ptr);
+	// std::cout << "SIZE(" << m.size() << ")" << std::endl;
+	// validAvl(ptr);
 
 	return 0;
 }
