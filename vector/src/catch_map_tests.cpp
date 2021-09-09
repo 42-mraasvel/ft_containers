@@ -1,5 +1,6 @@
 #include "map.hpp"
 #include "settings.hpp"
+#include "equal.hpp"
 
 #ifdef CATCH_TEST_ENABLED
 #include "catch2/catch.hpp"
@@ -74,6 +75,11 @@ TEST_CASE("map assignment operator", "[map]") {
 	NS::map<char, int> m2;
 
 	m2 = m;
+	bool result = NS::equal(m.begin(), m.end(), m2.begin());
+	REQUIRE(result);
+
+
+
 	REQUIRE(m2['a'] == 10);
 	REQUIRE(m2['b'] == 20);
 	REQUIRE(m2['c'] == 30);
@@ -373,6 +379,43 @@ TEST_CASE("map equal_range", "[map]") {
 	ret = mymap.equal_range('c');
 	REQUIRE(ret.first == mymap.lower_bound('c'));
 	REQUIRE(ret.second == mymap.upper_bound('c'));
+}
+
+/*
+RELATIONAL OPERATORS
+*/
+
+TEST_CASE("map relational operators", "[map]") {
+	NS::map<int, char> alice;
+	NS::map<int, char> bob;
+	NS::map<int, char> eve;
+
+	alice[1] = 'a';
+	alice[2] = 'b';
+	alice[3] = 'c';
+
+	bob[7] = 'Z';
+	bob[8] = 'Y';
+	bob[9] = 'X';
+	bob[10] = 'W';
+
+	eve = alice;
+
+    // Compare non equal containers
+	REQUIRE(!(alice == bob));
+	REQUIRE(alice != bob);
+	REQUIRE(alice < bob);
+	REQUIRE(alice <= bob);
+	REQUIRE(!(alice > bob));
+	REQUIRE(!(alice >= bob));
+ 
+    // Compare equal containers
+	REQUIRE(alice == eve);
+	REQUIRE(!(alice != eve));
+	REQUIRE(!(alice < eve));
+	REQUIRE(alice <= eve);
+	REQUIRE(!(alice > eve));
+	REQUIRE(alice >= eve);
 }
 
 #endif

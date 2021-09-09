@@ -470,18 +470,19 @@ Assignation
 */
 
 	void _M_assign(const TreeAVL& rhs) {
-		_root = _M_copy_node(rhs._root, rhs);
+		_root = _M_copy_node(rhs._root, NULL, rhs);
 		_size = rhs.size();
 		_compare = rhs._compare;
 	}
 
-	node_pointer _M_copy_node(const_node_pointer node, const TreeAVL& from) {
+	node_pointer _M_copy_node(const_node_pointer node, node_pointer parent, const TreeAVL& from) {
 		if (node == NULL) {
 			return NULL;
 		}
 		node_pointer copy = _M_new_node(*node);
-		copy->left = _M_copy_node(node->left, from);
-		copy->right = _M_copy_node(node->right, from);
+		copy->parent = parent;
+		copy->left = _M_copy_node(node->left, copy, from);
+		copy->right = _M_copy_node(node->right, copy, from);
 		if (node == from._min_ptr) {
 			_min_ptr = copy;
 		}

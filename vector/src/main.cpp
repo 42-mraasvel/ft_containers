@@ -3,6 +3,9 @@
 #include "is_integral.hpp"
 #include "FakeAllocator.hpp"
 #include "map.hpp"
+#include <cassert>
+#include <random>
+#include <algorithm>
 #include <map>
 
 template <typename C>
@@ -21,45 +24,6 @@ void PrintContainer(const C& container) {
 	PrintCapSize(container);
 }
 
-class Example
-{
-public:
-	Example() {
-		n = total++;
-		std::cout << "Constructor: " << n << std::endl;
-	}
-
-	Example(int n)
-	: n(n) {}
-
-	Example(const Example& from) {
-		n = from.n;
-		std::cout << "Copy Constructor: " << n << std::endl;
-	}
-
-	~Example() {
-		std::cout << "Destructor: " << n << std::endl;
-	}
-
-	Example& operator=(const Example& rhs) {
-		n = rhs.n;
-		std::cout << "Assignment: " << n << std::endl;
-		return *this;
-	}
-
-	static int total;
-
-	int n;
-
-};
-
-std::ostream& operator<<(std::ostream& out, const Example& e) {
-	out << e.n;
-	return out;
-}
-
-int Example::total = 0;
-
 class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {};
 
 
@@ -71,6 +35,28 @@ class IntIterator : public ft::iterator<ft::random_access_iterator_tag, int*> {}
 
 int TestAVL();
 
+class Example {
+
+public:
+	Example(int x)
+	: x(x) {}
+
+	int getValue() const {
+		return x;
+	}
+
+private:
+	int x;
+};
+
+struct CompareExample
+	: public ft::binary_function<Example, Example, bool> {
+public:
+	bool operator() (const Example& a, const Example& b) const {
+		return a.getValue() < b.getValue();
+	}
+};
+
 /*
 input_iterator_tag;
 output_iterator_tag;
@@ -80,9 +66,36 @@ random_access_iterator_tag;
 */
 
 int main() {
-	ft::vector<int> m(6);
+	ft::map<int, char> alice;
+	ft::map<int, char> eve;
 
-	// m.assign(7, 7);
+	alice[1] = 'a';
+	alice[2] = 'b';
+	alice[3] = 'c';
+
+	eve = alice;
+
+	std::cout << eve.size() << std::endl;
+
+	auto min = eve.min();
+	auto max = eve.max();
+
+	std::cout << "MIN: " << min->key.second << std::endl;
+	std::cout << "MAX: " << max->key.second << std::endl;
+
+	auto base = eve.root();
+
+	std::cout << "** base ** " << std::endl;
+	std::cout << base->key.second << std::endl;
+	std::cout << base << std::endl;
+	std::cout << base->left->parent->key.second << std::endl;
+	std::cout << base->right->parent << std::endl;
+
+
+	std::cout << std::endl;
+	auto it = eve.begin();
+	++it;
+
 	return 0;
 }
 #endif /* CATCH_TEST_ENABLED */
