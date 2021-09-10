@@ -98,8 +98,11 @@ AVL TREES
 
 Red-Black Trees
 
-	17:00
+	Visualized:
 
+		https://www.cs.usfca.edu/~galles/visualization/RedBlack.html
+
+	50 minutes!
 	https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-046j-introduction-to-algorithms-sma-5503-fall-2005/video-lectures/lecture-10-red-black-trees-rotations-insertions-deletions/
 
 	Invariant:
@@ -109,3 +112,15 @@ Red-Black Trees
 		3. There are no two adjacent red nodes (A red node cannot have a red parent or red child).
 		4. Every path from a node (including root) to any of its descendants NULL nodes has the same number of black nodes.
 
+	Operations (insert, delete)
+
+		- BST operation
+		- Change color
+		- Restructuring of links to preserve properties via rotations
+
+
+
+		Insert(x):
+			color = read
+			violation (3) : parent might be red
+			move violation up the tree via recoloring until the violation can be fixed using a rotation or recoloring
