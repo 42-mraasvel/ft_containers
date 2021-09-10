@@ -2,6 +2,7 @@
 #include "GenIterator.hpp"
 #include "is_integral.hpp"
 #include "FakeAllocator.hpp"
+#include "red_black/node_red_black.hpp"
 #include "map.hpp"
 #include <cassert>
 #include <random>
@@ -65,36 +66,10 @@ bidirectional_iterator_tag;
 random_access_iterator_tag;
 */
 
+void testRedBlack();
+
 int main() {
-	ft::map<int, char> alice;
-	ft::map<int, char> eve;
-
-	alice[1] = 'a';
-	alice[2] = 'b';
-	alice[3] = 'c';
-
-	eve = alice;
-
-	std::cout << eve.size() << std::endl;
-
-	auto min = eve.min();
-	auto max = eve.max();
-
-	std::cout << "MIN: " << min->key.second << std::endl;
-	std::cout << "MAX: " << max->key.second << std::endl;
-
-	auto base = eve.root();
-
-	std::cout << "** base ** " << std::endl;
-	std::cout << base->key.second << std::endl;
-	std::cout << base << std::endl;
-	std::cout << base->left->parent->key.second << std::endl;
-	std::cout << base->right->parent << std::endl;
-
-
-	std::cout << std::endl;
-	auto it = eve.begin();
-	++it;
+	testRedBlack();
 
 	return 0;
 }
