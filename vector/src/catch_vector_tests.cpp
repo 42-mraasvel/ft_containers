@@ -9,7 +9,7 @@
 #include <iostream>
 
 #ifdef CATCH_TEST_ENABLED
-#include "catch2/catch.hpp"
+#include "catch.hpp"
 
 
 /* Constructors */

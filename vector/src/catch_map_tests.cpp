@@ -3,7 +3,7 @@
 #include "equal.hpp"
 
 #ifdef CATCH_TEST_ENABLED
-#include "catch2/catch.hpp"
+#include "catch.hpp"
 
 /*
 CONSTRUCTOR

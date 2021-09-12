@@ -56,7 +56,7 @@ else
 endif
 
 ifdef DEBUG
-	CXXFLAGS += -std=c++11 -pedantic -g3 -D$(CATCH_DEFINE) 
+	CXXFLAGS += -std=c++14 -pedantic -g3 -D$(CATCH_DEFINE)
 	ifdef $(STD_VECTOR_TEST_DEFINE)
 		CXXFLAGS += -D$(STD_VECTOR_TEST_DEFINE)
 	endif
