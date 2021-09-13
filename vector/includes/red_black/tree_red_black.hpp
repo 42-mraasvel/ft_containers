@@ -201,32 +201,34 @@ private:
 /* Fixing RB property post-insertion */
 	void _M_insert_fix_property(node_pointer x) {
 		while (_M_get_color(x->parent) == RED) {
-
 			if (_M_get_color(_M_get_uncle(x)) == RED) {
-				_M_recolor_uncle(x);
+				_M_insert_case_1(x);
 				x = x->parent->parent;
 			} else {
-
-				x = _M_check_balance(x);
-				x->parent->color = BLACK;
-				x->parent->parent->color = RED;
-				if (x->parent == x->parent->parent->left) {
-					_M_rotate_right(x->parent->parent);
-				} else {
-					_M_rotate_left(x->parent->parent);
-				}
+				_M_insert_case_23(x);
 			}
 		}
 		_root->color = BLACK;
 	}
 
-	void _M_recolor_uncle(node_pointer x) {
+	void _M_insert_case_1(node_pointer x) {
 		x->parent->color = BLACK;
 		x->parent->parent->color = RED;
 		_M_get_uncle(x)->color = BLACK;
 	}
 
-	node_pointer _M_check_balance(node_pointer x) {
+	void _M_insert_case_23(node_pointer x) {
+		x = _M_insert_case_2(x);
+		x->parent->color = BLACK;
+		x->parent->parent->color = RED;
+		if (x->parent == x->parent->parent->left) {
+			_M_rotate_right(x->parent->parent);
+		} else {
+			_M_rotate_left(x->parent->parent);
+		}
+	}
+
+	node_pointer _M_insert_case_2(node_pointer x) {
 		node_pointer parent = x->parent;
 		if (parent == parent->parent->left && x == parent->right) {
 			_M_rotate_left(parent);

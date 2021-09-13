@@ -91,9 +91,9 @@ void testRedBlack() {
 
 	TreeRB<int> m;
 
-	for (int i = 0; i < 10; ++i) {
-		m.insert(i);
-	}
+	m.insert(12);
+	m.insert(10);
+	m.insert(11);
 
 	std::cout << "SIZE(" << m.size() << ')' << std::endl;
 
