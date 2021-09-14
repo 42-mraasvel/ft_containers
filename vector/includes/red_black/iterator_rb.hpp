@@ -69,28 +69,27 @@ public:
 		return temp;
 	}
 
-	bool operator==(const IteratorRB& rhs) const {
-		return _ptr == rhs._ptr && _end_reached == rhs._end_reached && _max_ptr == rhs._max_ptr;
-	}
-
-	bool operator!=(const IteratorRB& rhs) const {
-		return !(*this == rhs);
+	template <typename T1, typename T2>
+	friend bool operator==(const IteratorRB<T1>& lhs, const IteratorRB<T2>& rhs) {
+		return lhs.base() == rhs.base()
+			&& lhs._get_max_ptr() == rhs._get_max_ptr()
+			&& lhs._end_reached == rhs._end_reached;
 	}
 
 	reference operator*() {
-		return _ptr->key;
+		return _ptr->value;
 	}
 
 	const_reference operator*() const {
-		return _ptr->key;
+		return _ptr->value;
 	}
 
 	pointer operator->() {
-		return &(_ptr->key);
+		return &(_ptr->value);
 	}
 
 	const_pointer operator->() const {
-		return &(_ptr->key);
+		return &(_ptr->value);
 	}
 
 /* Bidirectional */
@@ -119,16 +118,26 @@ public:
 		_end_reached = true;
 	}
 
-	operator const_iterator() {
+	operator const_iterator() const {
 		return const_iterator(
-			reinterpret_cast<const_node_pointer> (_ptr),
-			reinterpret_cast<const const_node_pointer*> (_max_ptr),
+			base(),
+			_get_max_ptr(),
 			_end_reached
 		);
 	}
 
 	node_pointer base() {
 		return _ptr;
+	}
+
+	const_node_pointer base() const {
+		return reinterpret_cast<const_node_pointer> (_ptr);
+	}
+
+private:
+/* Private Getters */
+	const const_node_pointer* _get_max_ptr() const {
+		return reinterpret_cast<const const_node_pointer*> (_max_ptr);
 	}
 
 /* Private Member Variables */
@@ -138,6 +147,11 @@ private:
 	bool _end_reached;
 
 };
+
+template <typename T1, typename T2>
+bool operator!=(const IteratorRB<T1> lhs, const IteratorRB<T2> rhs) {
+	return !(lhs == rhs);
+}
 
 }
 

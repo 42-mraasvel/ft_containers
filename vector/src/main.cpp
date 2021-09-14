@@ -9,6 +9,7 @@
 #include <random>
 #include <algorithm>
 #include <map>
+#include <set>
 
 template <typename C>
 void PrintCapSize(const C& container) {
@@ -70,11 +71,25 @@ random_access_iterator_tag;
 void testRedBlack();
 
 int main() {
+	std::cout << std::boolalpha;
 
-	static const int table[] = {0, 1, 2, 3, 4};
-	const int size = sizeof(table) / sizeof(int);
+	std::set<int> s;
+	std::set<int> s2;
 
-	ft::set<int> s(table, table + size);
+	s.insert(42);
+	s2.insert(420);
+
+	auto it = s.begin();
+	auto ite = s.end();
+
+	s.swap(s2);
+
+
+	--ite;
+	++it;
+	--it;
+	std::cout << *it << std::endl;
+	std::cout << *ite << std::endl;
 
 	return 0;
 }

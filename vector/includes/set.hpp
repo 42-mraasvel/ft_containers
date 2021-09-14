@@ -49,20 +49,15 @@ public:
 /* Constructors/Destructor */
 	explicit set(const key_compare& comp = key_compare(),
 				const allocator_type& alloc = allocator_type())
-	: _tree(comp) {
-		(void)alloc;
+	: _tree(comp), _alloc(alloc) {
 	}
 
 	template <class InputIterator>
 	set(InputIterator first, InputIterator last,
 		const key_compare& comp = key_compare(),
 		const allocator_type& alloc = allocator_type())
-	: _tree(comp) {
-		(void)alloc;
-		while (first != last) {
-			// insert(*first);
-			++first;
-		}
+	: _tree(comp), _alloc(alloc) {
+		insert(first, last);
 	}
 
 	set(const set& x)
@@ -141,10 +136,35 @@ public:
 		}
 	}
 
+	void erase(iterator position) {
+		_tree.erase(position);
+	}
 
-private:
+	size_type erase(const value_type& val) {
+		size_type old_size = size();
+		_tree.erase(val);
+		return (old_size - size());
+	}
+
+	void erase(iterator first, iterator last) {
+		while (first != last) {
+			_tree.erase(first++);
+		}
+	}
+
+	void swap(set& x) {
+		_tree.swap(x._tree);
+	}
+
+	void clear() {
+		_tree.clear();
+	}
+
+
+public:
 /* Private Member Variables */
 	tree_type _tree;
+	allocator_type _alloc;
 };
 
 }

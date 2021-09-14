@@ -39,7 +39,7 @@ HDF := $(shell find $(IDIR) -name "*.hpp" -type f)
 CXX = clang++
 IFLAGS = -I$(IDIR) -I./$(IDIR)/reimplemented -I./$(IDIR)/avl
 LFLAGS =
-CXXFLAGS = -Wall -Wextra -Werror
+CXXFLAGS = -Wall -Wextra -Werror -std=c++11
 
 # Optional Flags
 UNUSED_FLAGS := -Wno-unused -Wno-unused-parameter

@@ -136,5 +136,20 @@ TEST_CASE("Red-Black erase case 4", "[red-black]") {
 	REQUIRE(_TEST_validRB(m) == true);
 }
 
+TEST_CASE("Red-Black hint test", "[red-black]") {
+	ft::TreeRB<int> s;
+	s.insert(42);
+	s.insert(69);
+
+	auto it = s.begin();
+	++it;
+	REQUIRE(*it == 69);
+	s.insert(it, 420);
+
+	REQUIRE(s.size() == 3);
+
+	REQUIRE(_TEST_validRB(s) == true);
+}
+
 #endif /* STD_VECTOR_TESTS */
 #endif /* CATCH_TEST_ENABLED */

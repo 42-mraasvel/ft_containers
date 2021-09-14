@@ -45,6 +45,22 @@ public:
 		return _root;
 	}
 
+	node_pointer min() {
+		return _min_ptr;
+	}
+
+	const node_pointer min() const {
+		return _min_ptr;
+	}
+
+	node_pointer max() {
+		return _min_ptr;
+	}
+
+	const node_pointer max() const {
+		return _min_ptr;
+	}
+
 /* Constructors / Destructor */
 public:
 	TreeRB()
@@ -117,9 +133,9 @@ public:
 		node_pointer x = position.base();
 
 		if (_compare(val, x->getValue()) && x->left != NULL) {
-			return _M_insert(val);
+			return insert(val);
 		} else if (_compare(x->getValue(), val) && x->right != NULL) {
-			return _M_insert(val);
+			return insert(val);
 		}
 
 		_M_insert(x, val);
@@ -128,9 +144,12 @@ public:
 	}
 
 	void erase(const T& val) {
-		node_pointer x = _M_find(val);
-		if (x != NULL) {
-			_M_delete_node(x);
+		erase(find(val));
+	}
+
+	void erase(iterator position) {
+		if (position.base()) {
+			_M_delete_node(position.base());
 		}
 
 		if (size() == 0) {
@@ -138,9 +157,25 @@ public:
 		}
 	}
 
+	void swap(TreeRB& x) {
+		ft::swap(_root, x._root);
+		ft::swap(_size, x._size);
+		ft::swap(_added_node, x._added_node);
+		ft::swap(_max_ptr, x._max_ptr);
+		ft::swap(_min_ptr, x._min_ptr);
+	}
+
 	void clear() {
 		_M_clear(base());
 		_M_bzero_tree();
+	}
+
+	iterator find(const T& val) {
+		return _M_create_iterator(_M_find(val));
+	}
+
+	const_iterator find(const T& val) const {
+		return _M_create_iterator(_M_find(val));
 	}
 
 private:
@@ -213,6 +248,21 @@ private:
 		return NULL;
 	}
 
+	const node_pointer _M_find(const T& val) const {
+		const node_pointer x = base();
+		while (x) {
+			if (_compare(val, x->getValue())) {
+				x = x->left;
+			} else if (_compare(x->getValue(), val)) {
+				x = x->right;
+			} else {
+				return x;
+			}
+		}
+
+		return NULL;
+	}
+
 	iterator _M_create_iterator(node_pointer ptr) {
 		iterator it = iterator(ptr, &_max_ptr);
 		if (_max_ptr == NULL) {
@@ -240,13 +290,13 @@ private:
 		if (x == NULL) {
 			return NULL;
 		}
-		node_pointer copy = _M_copy_node(x);
+		node_pointer copy = _M_copy_node(x, parent);
 
-		if (x == rhs->_max_ptr) {
+		if (x == rhs._max_ptr) {
 			_max_ptr = copy;
 		}
 
-		if (x == rhs->_min_ptr) {
+		if (x == rhs._min_ptr) {
 			_min_ptr = copy;
 		}
 
@@ -257,7 +307,7 @@ private:
 
 	node_pointer _M_copy_node(node_pointer x, node_pointer parent) {
 		node_pointer y = _alloc.allocate(1);
-		_alloc.construct(y, x);
+		_alloc.construct(y, *x);
 		y->parent = parent;
 		return y;
 	}
