@@ -44,6 +44,14 @@ int testNode(const NodeRB<T>* x) {
 		return 0;
 	}
 
+	if (x->left) {
+		assert(x->left->parent == x);
+	}
+
+	if (x->right) {
+		assert(x->right->parent == x);
+	}
+
 	if (x->color == NodeRB<T>::RED) {
 		assert(x->parent->color == NodeRB<T>::BLACK);
 	}
@@ -57,7 +65,6 @@ bool testRedBlackInvariant(const NodeRB<T>* root) {
 	if (root == NULL) {
 		return true;
 	}
-
 	assert(root->color == NodeRB<T>::BLACK);
 	testNode(root);
 	return true;
@@ -87,22 +94,19 @@ void printTree(const Node* root) {
 }
 
 void testRedBlack() {
-	std::cout << std::boolalpha;
+	ft::TreeRB<int> m;
 
-	TreeRB<int> m;
-
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 2; ++i) {
 		m.insert(i);
 	}
 
-	for (int i = 9; i >= 0; --i) {
-		m.erase(i);
-	}
+	// m.erase(4);
 
 	std::cout << "SIZE(" << m.size() << ')' << std::endl;
 
 	TreeRB<int>::node_pointer root = m.base();
 	printTree(root);
+
 	std::cout << testRedBlackInvariant(root) << std::endl;
 	
 	m.clear();

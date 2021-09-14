@@ -7,7 +7,6 @@
 #include "equal.hpp"
 #include "lexicographical_compare.hpp"
 #include "pair.hpp"
-#include "make_pair.hpp"
 #include "reverse_iterator.hpp"
 
 #ifdef CATCH_TEST_ENABLED

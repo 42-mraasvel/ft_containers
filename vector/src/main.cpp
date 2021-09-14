@@ -4,6 +4,7 @@
 #include "FakeAllocator.hpp"
 #include "red_black/node_red_black.hpp"
 #include "map.hpp"
+#include "set.hpp"
 #include <cassert>
 #include <random>
 #include <algorithm>
@@ -69,7 +70,11 @@ random_access_iterator_tag;
 void testRedBlack();
 
 int main() {
-	testRedBlack();
+
+	static const int table[] = {0, 1, 2, 3, 4};
+	const int size = sizeof(table) / sizeof(int);
+
+	ft::set<int> s(table, table + size);
 
 	return 0;
 }

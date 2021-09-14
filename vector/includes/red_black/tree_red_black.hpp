@@ -2,32 +2,39 @@
 # define TREE_RED_BLACK_HPP
 
 # include "node_red_black.hpp"
+# include "iterator_rb.hpp"
 # include "less.hpp"
 # include "utils.hpp"
 
 # include <memory>
 # include <cstddef>
 
+# include <iostream> // REMOVE
+
 namespace ft {
 
 template <typename T, typename Compare = ft::less<int>, typename Alloc = std::allocator<T> >
 class TreeRB {
-public:
-/* Member Types */
+public: // Make PRIVATE for TURNIN!
 	typedef NodeRB<T> node_type;
 	typedef node_type* node_pointer;
 
-	typedef Alloc allocator_type;
-	typedef typename allocator_type::template rebind<node_type>::other	allocator_node;
-
-	typedef Compare compare_type;
-
-	typedef size_t size_type;
-
 	typedef typename node_type::color_type color_type;
-
 	static const color_type BLACK = node_type::BLACK;
 	static const color_type RED = node_type::RED;
+
+	typedef typename Alloc::template rebind<node_type>::other	allocator_node;
+public:
+/* Member Types */
+
+	typedef Alloc allocator_type;
+	typedef Compare compare_type;
+
+
+	typedef IteratorRB<T> iterator;
+	typedef IteratorRB<const T> const_iterator;
+
+	typedef size_t size_type;
 
 public:
 	node_pointer base() {
@@ -43,17 +50,81 @@ public:
 	TreeRB()
 	: _root(NULL), _size(0), _max_ptr(NULL), _min_ptr(NULL) {}
 
+	TreeRB(const compare_type& comp)
+	: _root(NULL), _size(0), _compare(comp), _max_ptr(NULL), _min_ptr(NULL) {}
+
+	TreeRB(const TreeRB& from)
+	: _root(NULL), _size(0), _max_ptr(NULL), _min_ptr(NULL) {
+		*this = from;
+	}
+
 	~TreeRB() {
 		clear();
 	}
 
-	void insert(const T& val) {
-		_M_insert(val);
-		_M_check_minmax();
+	TreeRB& operator=(const TreeRB& x) {
+		if (this == &x) {
+			return *this;
+		}
+		_M_assign(x);
+		return *this;
 	}
 
+/* Public Member Functions */
+
+/* Iterators */
+	iterator begin() {
+		return _M_create_iterator(_min_ptr);
+	}
+
+	const_iterator begin() const {
+		return _M_create_iterator(_min_ptr);
+	}
+
+	iterator end() {
+		return _M_create_iterator(NULL);
+	}
+
+	const_iterator end() const {
+		return _M_create_iterator(NULL);
+	}
+
+/* Capacity */
 	size_type size() const {
 		return _size;
+	}
+
+	size_type max_size() const {
+		return _alloc.max_size();
+	}
+
+/* Modifiers */
+
+	iterator insert(const T& val) {
+		if (_min_ptr && _compare(val, _min_ptr->getValue())) {
+			_M_insert(_min_ptr, val);
+		} else if (_max_ptr && _compare(_max_ptr->getValue(), val)) {
+			_M_insert(_max_ptr, val);
+		} else {
+			_M_insert(val);
+		}
+
+		_M_check_minmax();
+		return _M_create_iterator(_added_node);
+	}
+
+	iterator insert(iterator position, const T& val) {
+		node_pointer x = position.base();
+
+		if (_compare(val, x->getValue()) && x->left != NULL) {
+			return _M_insert(val);
+		} else if (_compare(x->getValue(), val) && x->right != NULL) {
+			return _M_insert(val);
+		}
+
+		_M_insert(x, val);
+		_M_check_minmax();
+		return _M_create_iterator(_added_node);
 	}
 
 	void erase(const T& val) {
@@ -80,7 +151,8 @@ private:
 
 	node_pointer _M_new_node(const T& val, node_pointer parent) {
 		node_pointer x = _alloc.allocate(1);
-		_alloc.construct(x, node_type(val, parent));
+		_alloc.construct(x, node_type(val));
+		x->parent = parent;
 		_added_node = x;
 		return x;
 	}
@@ -139,6 +211,55 @@ private:
 		}
 
 		return NULL;
+	}
+
+	iterator _M_create_iterator(node_pointer ptr) {
+		iterator it = iterator(ptr, &_max_ptr);
+		if (_max_ptr == NULL) {
+			it.set_end();
+		}
+		return it;
+	}
+
+	const_iterator _M_create_iterator(node_pointer ptr) const {
+		const_iterator it = iterator(ptr, &_max_ptr);
+		if (_max_ptr == NULL) {
+			it.set_end();
+		}
+		return it;
+	}
+
+/* Assignation */
+	void _M_assign(const TreeRB& rhs) {
+		clear();
+		_root = _M_assign(rhs._root, rhs, NULL);
+		_size = rhs._size;
+	}
+
+	node_pointer _M_assign(node_pointer x, const TreeRB& rhs, node_pointer parent) {
+		if (x == NULL) {
+			return NULL;
+		}
+		node_pointer copy = _M_copy_node(x);
+
+		if (x == rhs->_max_ptr) {
+			_max_ptr = copy;
+		}
+
+		if (x == rhs->_min_ptr) {
+			_min_ptr = copy;
+		}
+
+		copy->right = _M_assign(x->right, rhs, copy);
+		copy->left = _M_assign(x->left, rhs, copy);
+		return copy;
+	}
+
+	node_pointer _M_copy_node(node_pointer x, node_pointer parent) {
+		node_pointer y = _alloc.allocate(1);
+		_alloc.construct(y, x);
+		y->parent = parent;
+		return y;
 	}
 
 /* Red-Black Utils */
@@ -211,6 +332,7 @@ private:
 		} else if (_compare(parent->getValue(), val)) {
 			parent->right = _M_new_node(val, parent);
 		} else {
+			_added_node = parent;
 			return;
 		}
 

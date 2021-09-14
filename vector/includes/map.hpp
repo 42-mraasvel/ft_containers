@@ -2,7 +2,6 @@
 # define MAP_HPP
 
 # include "pair.hpp"
-# include "make_pair.hpp"
 # include "less.hpp"
 # include "reverse_iterator.hpp"
 # include "tree_avl.hpp"

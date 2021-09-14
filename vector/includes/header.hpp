@@ -16,6 +16,5 @@
 #include "equal.hpp"
 #include "is_integral.hpp"
 #include "pair.hpp"
-#include "make_pair.hpp"
 
 #endif /* HEADER_HPP */

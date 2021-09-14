@@ -56,6 +56,18 @@ bool _TEST_validRB(const ft::TreeRB<T>& m) {
 	return _TEST_testRedBlackInvariant(m.base());
 }
 
+/* Node Insertion */
+
+TEST_CASE("Red-Black Insertion case 1", "[red-black]") {
+	ft::TreeRB<int> t;
+
+	for (int i = 0; i < 10; ++i) {
+		t.insert(i);
+	}
+
+	REQUIRE(_TEST_validRB(t) == true);
+}
+
 /* Node Deletion */
 
 TEST_CASE("Red-Black erase case 0", "[red-black]") {
