@@ -91,14 +91,20 @@ void testRedBlack() {
 
 	TreeRB<int> m;
 
-	m.insert(12);
-	m.insert(10);
-	m.insert(11);
+	for (int i = 0; i < 10; ++i) {
+		m.insert(i);
+	}
+
+	for (int i = 9; i >= 0; --i) {
+		m.erase(i);
+	}
 
 	std::cout << "SIZE(" << m.size() << ')' << std::endl;
 
 	TreeRB<int>::node_pointer root = m.base();
 	printTree(root);
 	std::cout << testRedBlackInvariant(root) << std::endl;
+	
+	m.clear();
 
 }
