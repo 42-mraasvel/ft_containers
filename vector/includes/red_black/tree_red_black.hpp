@@ -64,18 +64,25 @@ public:
 /* Constructors / Destructor */
 public:
 	TreeRB()
-	: _root(NULL), _size(0), _max_ptr(NULL), _min_ptr(NULL) {}
+	: _root(NULL), _size(0), _max_ptr(NULL), _min_ptr(NULL) {
+		_M_init_end_pointer();
+	}
 
 	TreeRB(const compare_type& comp)
-	: _root(NULL), _size(0), _compare(comp), _max_ptr(NULL), _min_ptr(NULL) {}
+	: _root(NULL), _size(0), _compare(comp), _max_ptr(NULL), _min_ptr(NULL) {
+		_M_init_end_pointer();
+	}
 
 	TreeRB(const TreeRB& from)
 	: _root(NULL), _size(0), _max_ptr(NULL), _min_ptr(NULL) {
+		_M_init_end_pointer();
 		*this = from;
+		_M_update_end_pointer();
 	}
 
 	~TreeRB() {
 		clear();
+		_M_destroy_node(_end_ptr);
 	}
 
 	TreeRB& operator=(const TreeRB& x) {
@@ -98,11 +105,11 @@ public:
 	}
 
 	iterator end() {
-		return _M_create_iterator(NULL);
+		return _M_create_iterator(_end_ptr);
 	}
 
 	const_iterator end() const {
-		return _M_create_iterator(NULL);
+		return _M_create_iterator(_end_ptr);
 	}
 
 /* Capacity */
@@ -117,6 +124,8 @@ public:
 /* Modifiers */
 
 	iterator insert(const T& val) {
+		_M_unset_end_pointer();
+
 		if (_min_ptr && _compare(val, _min_ptr->getValue())) {
 			_M_insert(_min_ptr, val);
 		} else if (_max_ptr && _compare(_max_ptr->getValue(), val)) {
@@ -126,12 +135,14 @@ public:
 		}
 
 		_M_check_minmax();
+		_M_update_end_pointer();
 		return _M_create_iterator(_added_node);
 	}
 
 	iterator insert(iterator position, const T& val) {
-		node_pointer x = position.base();
+		_M_unset_end_pointer();
 
+		node_pointer x = position.base();
 		if (_compare(val, x->getValue()) && x->left != NULL) {
 			return insert(val);
 		} else if (_compare(x->getValue(), val) && x->right != NULL) {
@@ -140,6 +151,8 @@ public:
 
 		_M_insert(x, val);
 		_M_check_minmax();
+
+		_M_update_end_pointer();
 		return _M_create_iterator(_added_node);
 	}
 
@@ -148,6 +161,9 @@ public:
 	}
 
 	void erase(iterator position) {
+
+		_M_unset_end_pointer();
+
 		if (position.base()) {
 			_M_delete_node(position.base());
 		}
@@ -155,27 +171,37 @@ public:
 		if (size() == 0) {
 			_M_bzero_tree();
 		}
+
+		_M_update_end_pointer();
 	}
 
 	void swap(TreeRB& x) {
 		ft::swap(_root, x._root);
 		ft::swap(_size, x._size);
-		ft::swap(_added_node, x._added_node);
 		ft::swap(_max_ptr, x._max_ptr);
 		ft::swap(_min_ptr, x._min_ptr);
+		ft::swap(_end_ptr, x._end_ptr);
 	}
 
 	void clear() {
+		_M_unset_end_pointer();
 		_M_clear(base());
 		_M_bzero_tree();
+		_M_reset_end_pointer();
 	}
 
 	iterator find(const T& val) {
-		return _M_create_iterator(_M_find(val));
+		_M_unset_end_pointer();
+		iterator it = _M_create_iterator(_M_find(val));
+		_M_update_end_pointer();
+		return it;
 	}
 
 	const_iterator find(const T& val) const {
-		return _M_create_iterator(_M_find(val));
+		_M_unset_end_pointer();
+		iterator it = _M_create_iterator(_M_find(val));
+		_M_update_end_pointer();
+		return it;
 	}
 
 private:
@@ -264,19 +290,29 @@ private:
 	}
 
 	iterator _M_create_iterator(node_pointer ptr) {
-		iterator it = iterator(ptr, &_max_ptr);
-		if (_max_ptr == NULL) {
-			it.set_end();
+		if (_max_ptr == NULL || ptr == _end_ptr) {
+			return _M_end_iterator();
 		}
+
+		iterator it = iterator(ptr);
 		return it;
 	}
 
 	const_iterator _M_create_iterator(node_pointer ptr) const {
-		const_iterator it = iterator(ptr, &_max_ptr);
-		if (_max_ptr == NULL) {
-			it.set_end();
+		if (_max_ptr == NULL || ptr == _end_ptr) {
+			return _M_end_iterator();
 		}
+
+		const_iterator it = iterator(ptr);
 		return it;
+	}
+
+	iterator _M_end_iterator() {
+		return iterator(_end_ptr, true);
+	}
+
+	const_iterator _M_end_iterator() const {
+		return iterator(_end_ptr, true);
 	}
 
 /* Assignation */
@@ -287,7 +323,7 @@ private:
 	}
 
 	node_pointer _M_assign(node_pointer x, const TreeRB& rhs, node_pointer parent) {
-		if (x == NULL) {
+		if (x == NULL || x == rhs._end_ptr) {
 			return NULL;
 		}
 		node_pointer copy = _M_copy_node(x, parent);
@@ -585,29 +621,6 @@ private:
 		_M_rotate_right(parent);
 	}
 
-	node_pointer _M_delete_case1(node_pointer y, node_pointer parent) {
-		node_pointer sibling = _M_get_sibling(y, parent);
-		if (_M_get_color(sibling) == RED) {
-			ft::swap(sibling->color, parent->color);
-			if (sibling == parent->right) {
-				_M_rotate_left(parent);
-			} else {
-				_M_rotate_right(parent);
-			}
-			sibling = _M_get_sibling(y, parent);
-		}
-
-		return sibling;
-	}
-
-	node_pointer _M_get_sibling(node_pointer x, node_pointer parent) {
-		if (parent->left == x) {
-			return parent->right;
-		}
-
-		return parent->left;
-	}
-
 /* Node Swap Logic */
 	void _M_swap_node(node_pointer x, node_pointer y) {
 		if (x->parent == y) {
@@ -684,7 +697,31 @@ private:
 		_M_destroy_node(x);
 	}
 
-private:
+/* End Pointer Management */
+	void _M_init_end_pointer() {
+		_end_ptr = _alloc.allocate(1);
+		_alloc.construct(_end_ptr);
+		_end_ptr->color = RED;
+	}
+
+	void _M_reset_end_pointer() {
+		_end_ptr->left = NULL;
+	}
+
+	void _M_update_end_pointer() {
+		if (_max_ptr) {
+			_max_ptr->right = _end_ptr;
+		}
+		_end_ptr->left = _max_ptr;
+	}
+
+	void _M_unset_end_pointer() {
+		if (_max_ptr) {
+			_max_ptr->right = NULL;
+		}
+	}
+
+public:
 	node_pointer _root;
 	allocator_node _alloc;
 	size_type _size;
@@ -693,6 +730,8 @@ private:
 	node_pointer _added_node;
 	node_pointer _max_ptr;
 	node_pointer _min_ptr;
+
+	node_pointer _end_ptr;
 
 };
 

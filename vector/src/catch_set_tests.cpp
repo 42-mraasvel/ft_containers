@@ -354,6 +354,9 @@ TEST_CASE("set swap", "[set]") {
 	REQUIRE(*s.begin() == 420);
 	REQUIRE(*s2.begin() == 42);
 	REQUIRE(it == s2.begin());
+
+	++it;
+	REQUIRE(it == s2.end());
 }
 
 /* Observers */

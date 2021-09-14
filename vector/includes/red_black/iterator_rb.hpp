@@ -25,19 +25,16 @@ public:
 /* Constructors / Destructor */
 public:
 	IteratorRB()
-	: _ptr(NULL), _max_ptr(NULL), _end_reached(false) {}
+	: _ptr(NULL), _end_reached(false) {}
 	IteratorRB(const IteratorRB& from)
-	: _ptr(from._ptr), _max_ptr(from._max_ptr), _end_reached(from._end_reached) {}
+	: _ptr(from._ptr), _end_reached(from._end_reached) {}
 	~IteratorRB() {}
 
-	IteratorRB(const node_pointer node, const node_pointer* max_ptr)
-	: _ptr(node), _max_ptr(max_ptr), _end_reached(false) {
-		if (node == NULL && max_ptr != NULL)
-			_end_reached = true;
-	}
+	IteratorRB(const node_pointer node)
+	: _ptr(node), _end_reached(false) {}
 
-	IteratorRB(const node_pointer node, const node_pointer* max_ptr, bool end)
-	: _ptr(node), _max_ptr(max_ptr), _end_reached(end) {}
+	IteratorRB(const node_pointer node, bool end)
+	: _ptr(node), _end_reached(end) {}
 
 public:
 /* Operators */
@@ -46,35 +43,34 @@ public:
 			return *this;
 		}
 		_ptr = rhs._ptr;
-		_max_ptr = rhs._max_ptr;
 		_end_reached = rhs._end_reached;
 		return *this;
 	}
 
 /* Input */
 	IteratorRB& operator++() {
-		_ptr = _ptr->next();
-		if (_ptr == NULL) {
+		if (_M_is_end()) {
+			_ptr = _ptr->right;
 			_end_reached = true;
+		} else {
+			_ptr = _ptr->next();
 		}
 		return *this;
 	}
 
 	IteratorRB operator++(int) {
 		IteratorRB temp(*this);
-		_ptr = _ptr->next();
-		if (_ptr == NULL) {
+		if (_M_is_end()) {
+			_ptr = _ptr->right;
 			_end_reached = true;
+		} else {
+			_ptr = _ptr->next();
 		}
 		return temp;
 	}
 
 	template <typename T1, typename T2>
-	friend bool operator==(const IteratorRB<T1>& lhs, const IteratorRB<T2>& rhs) {
-		return lhs.base() == rhs.base()
-			&& lhs._get_max_ptr() == rhs._get_max_ptr()
-			&& lhs._end_reached == rhs._end_reached;
-	}
+	friend bool operator==(const IteratorRB<T1>& lhs, const IteratorRB<T2>& rhs);
 
 	reference operator*() {
 		return _ptr->value;
@@ -95,7 +91,7 @@ public:
 /* Bidirectional */
 	IteratorRB& operator--() {
 		if (_end_reached == true) {
-			_ptr = *_max_ptr;
+			_ptr = _ptr->left;
 			_end_reached = false;
 		} else {
 			_ptr = _ptr->prev();
@@ -106,7 +102,7 @@ public:
 	IteratorRB& operator--(int) {
 		IteratorRB temp(*this);
 		if (_end_reached == true) {
-			_ptr = *_max_ptr;
+			_ptr = _ptr->left;
 			_end_reached = false;
 		} else {
 			_ptr = _ptr->prev();
@@ -121,7 +117,6 @@ public:
 	operator const_iterator() const {
 		return const_iterator(
 			base(),
-			_get_max_ptr(),
 			_end_reached
 		);
 	}
@@ -135,18 +130,23 @@ public:
 	}
 
 private:
-/* Private Getters */
-	const const_node_pointer* _get_max_ptr() const {
-		return reinterpret_cast<const const_node_pointer*> (_max_ptr);
+
+	bool _M_is_end() {
+		return _ptr->right && _ptr->right->left == _ptr;
 	}
 
 /* Private Member Variables */
 private:
 	node_pointer _ptr;
-	const node_pointer* _max_ptr;
 	bool _end_reached;
 
 };
+
+template <typename T1, typename T2>
+bool operator==(const IteratorRB<T1>& lhs, const IteratorRB<T2>& rhs) {
+	return lhs.base() == rhs.base()
+		&& lhs._end_reached == rhs._end_reached;
+}
 
 template <typename T1, typename T2>
 bool operator!=(const IteratorRB<T1> lhs, const IteratorRB<T2> rhs) {

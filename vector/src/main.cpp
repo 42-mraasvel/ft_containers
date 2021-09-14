@@ -71,26 +71,30 @@ random_access_iterator_tag;
 void testRedBlack();
 
 int main() {
-	std::cout << std::boolalpha;
-
-	std::set<int> s;
-	std::set<int> s2;
+	NS::set<int> s;
 
 	s.insert(42);
-	s2.insert(420);
 
-	auto it = s.begin();
-	auto ite = s.end();
-
-	s.swap(s2);
-
-
-	--ite;
-	++it;
+	auto it = s.end();
 	--it;
 	std::cout << *it << std::endl;
-	std::cout << *ite << std::endl;
 
+	it = s.begin();
+
+	std::cout << it.base() << ", " << s._tree._min_ptr << std::endl;
+
+	++it;
+	std::cout << it.base() << ", " << s._tree._end_ptr << std::endl;
+
+	// auto rit = s.rend();
+	// --rit;
+	// std::cout << s._tree._end_ptr << std::endl;
+	// std::cout << s._tree._min_ptr << std::endl;
+	// std::cout << rit.base().base() << std::endl;
+	// std::cout << *rit << std::endl;
+	// REQUIRE(*rit == 42);
+	// ++rit;
+	// REQUIRE(rit == s.rend());
 	return 0;
 }
 #endif /* CATCH_TEST_ENABLED */

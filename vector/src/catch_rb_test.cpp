@@ -4,22 +4,24 @@
 #ifndef STD_VECTOR_TESTS
 # include "catch.hpp"
 
+namespace Test {
+
 template <typename Node>
-bool _TEST_isBlack(const Node* root) {
+bool isBlack(const Node* root) {
 	return root == NULL || root->color == Node::BLACK;
 }
 
 template <typename Node>
-int _TEST_blackHeight(const Node* root) {
-	if (root == NULL) {
+int blackHeight(const Node* root) {
+	if (root == NULL || (root->left && root->left->right == root)) {
 		return 0;
 	}
 
-	int blackHeightLeft = _TEST_blackHeight(root->left);
-	int blackHeightRight = _TEST_blackHeight(root->right);
+	int blackHeightLeft = blackHeight(root->left);
+	int blackHeightRight = blackHeight(root->right);
 	assert(blackHeightLeft == blackHeightRight);
 
-	if (_TEST_isBlack(root)) {
+	if (isBlack(root)) {
 		return blackHeightLeft + 1;
 	}
 
@@ -27,8 +29,8 @@ int _TEST_blackHeight(const Node* root) {
 }
 
 template <typename Node>
-int _TEST_testNode(const Node* x) {
-	if (x == NULL) {
+int testNode(const Node* x) {
+	if (x == NULL || (x->left && x->left->right == x)) {
 		return 0;
 	}
 
@@ -36,24 +38,26 @@ int _TEST_testNode(const Node* x) {
 		assert(x->parent->color == Node::BLACK);
 	}
 
-	assert(_TEST_testNode(x->left) == _TEST_testNode(x->right));
-	return _TEST_blackHeight(x);
+	assert(testNode(x->left) == testNode(x->right));
+	return blackHeight(x);
 }
 
 template <typename Node>
-bool _TEST_testRedBlackInvariant(const Node* root) {
+bool testRedBlackInvariant(const Node* root) {
 	if (root == NULL) {
 		return true;
 	}
 
 	assert(root->color == Node::BLACK);
-	_TEST_testNode(root);
+	testNode(root);
 	return true;
 }
 
 template <typename T>
-bool _TEST_validRB(const ft::TreeRB<T>& m) {
-	return _TEST_testRedBlackInvariant(m.base());
+bool validRB(const ft::TreeRB<T>& m) {
+	return testRedBlackInvariant(m.base());
+}
+
 }
 
 /* Node Insertion */
@@ -65,7 +69,7 @@ TEST_CASE("Red-Black Insertion case 1", "[red-black]") {
 		t.insert(i);
 	}
 
-	REQUIRE(_TEST_validRB(t) == true);
+	REQUIRE(Test::validRB(t) == true);
 }
 
 /* Node Deletion */
@@ -79,7 +83,7 @@ TEST_CASE("Red-Black erase case 0", "[red-black]") {
 
 	m.erase(4);
 
-	REQUIRE(_TEST_validRB(m) == true);
+	REQUIRE(Test::validRB(m) == true);
 }
 
 TEST_CASE("Red-Black erase case 1", "[red-black]") {
@@ -91,7 +95,7 @@ TEST_CASE("Red-Black erase case 1", "[red-black]") {
 
 	m.erase(4);
 
-	REQUIRE(_TEST_validRB(m) == true);
+	REQUIRE(Test::validRB(m) == true);
 }
 
 TEST_CASE("Red-Black erase case 2", "[red-black]") {
@@ -103,7 +107,7 @@ TEST_CASE("Red-Black erase case 2", "[red-black]") {
 
 	m.erase(1);
 
-	REQUIRE(_TEST_validRB(m) == true);
+	REQUIRE(Test::validRB(m) == true);
 }
 
 TEST_CASE("Red-Black erase case 3", "[red-black]") {
@@ -121,7 +125,7 @@ TEST_CASE("Red-Black erase case 3", "[red-black]") {
 
 	m.erase(0);
 
-	REQUIRE(_TEST_validRB(m) == true);
+	REQUIRE(Test::validRB(m) == true);
 }
 
 TEST_CASE("Red-Black erase case 4", "[red-black]") {
@@ -133,7 +137,7 @@ TEST_CASE("Red-Black erase case 4", "[red-black]") {
 
 	m.erase(3);
 
-	REQUIRE(_TEST_validRB(m) == true);
+	REQUIRE(Test::validRB(m) == true);
 }
 
 TEST_CASE("Red-Black hint test", "[red-black]") {
@@ -148,7 +152,7 @@ TEST_CASE("Red-Black hint test", "[red-black]") {
 
 	REQUIRE(s.size() == 3);
 
-	REQUIRE(_TEST_validRB(s) == true);
+	REQUIRE(Test::validRB(s) == true);
 }
 
 #endif /* STD_VECTOR_TESTS */
