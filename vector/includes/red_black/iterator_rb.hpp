@@ -99,7 +99,7 @@ public:
 		return *this;
 	}
 
-	IteratorRB& operator--(int) {
+	IteratorRB operator--(int) {
 		IteratorRB temp(*this);
 		if (_end_reached == true) {
 			_ptr = _ptr->left;

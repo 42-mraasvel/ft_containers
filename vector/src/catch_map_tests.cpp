@@ -401,7 +401,7 @@ TEST_CASE("map relational operators", "[map]") {
 
 	eve = alice;
 
-    // Compare non equal containers
+	// Compare non equal containers
 	REQUIRE(!(alice == bob));
 	REQUIRE(alice != bob);
 	REQUIRE(alice < bob);
@@ -409,7 +409,7 @@ TEST_CASE("map relational operators", "[map]") {
 	REQUIRE(!(alice > bob));
 	REQUIRE(!(alice >= bob));
  
-    // Compare equal containers
+	// Compare equal containers
 	REQUIRE(alice == eve);
 	REQUIRE(!(alice != eve));
 	REQUIRE(!(alice < eve));

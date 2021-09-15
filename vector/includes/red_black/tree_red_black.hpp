@@ -5,61 +5,37 @@
 # include "iterator_rb.hpp"
 # include "less.hpp"
 # include "utils.hpp"
+# include "pair.hpp"
 
 # include <memory>
 # include <cstddef>
-
-# include <iostream> // REMOVE
 
 namespace ft {
 
 template <typename T, typename Compare = ft::less<int>, typename Alloc = std::allocator<T> >
 class TreeRB {
-public: // Make PRIVATE for TURNIN!
+public:
+/* Member Types */
+
+	typedef IteratorRB<T> iterator;
+	typedef IteratorRB<const T> const_iterator;
+
+private:
+	typedef Alloc allocator_type;
+	typedef Compare value_compare;
+	typedef T value_type;
+	typedef size_t size_type;
+
 	typedef NodeRB<T> node_type;
-	typedef node_type* node_pointer;
+	typedef NodeRB<const T> const_node_type;
+	typedef typename node_type::node_pointer node_pointer;
+	typedef NodeRB<const T>* const_node_pointer;
 
 	typedef typename node_type::color_type color_type;
 	static const color_type BLACK = node_type::BLACK;
 	static const color_type RED = node_type::RED;
 
 	typedef typename Alloc::template rebind<node_type>::other	allocator_node;
-public:
-/* Member Types */
-
-	typedef Alloc allocator_type;
-	typedef Compare compare_type;
-
-
-	typedef IteratorRB<T> iterator;
-	typedef IteratorRB<const T> const_iterator;
-
-	typedef size_t size_type;
-
-public:
-	node_pointer base() {
-		return _root;
-	}
-
-	const node_pointer base() const {
-		return _root;
-	}
-
-	node_pointer min() {
-		return _min_ptr;
-	}
-
-	const node_pointer min() const {
-		return _min_ptr;
-	}
-
-	node_pointer max() {
-		return _min_ptr;
-	}
-
-	const node_pointer max() const {
-		return _min_ptr;
-	}
 
 /* Constructors / Destructor */
 public:
@@ -68,16 +44,15 @@ public:
 		_M_init_end_pointer();
 	}
 
-	TreeRB(const compare_type& comp)
+	TreeRB(const value_compare& comp)
 	: _root(NULL), _size(0), _compare(comp), _max_ptr(NULL), _min_ptr(NULL) {
 		_M_init_end_pointer();
 	}
 
 	TreeRB(const TreeRB& from)
-	: _root(NULL), _size(0), _max_ptr(NULL), _min_ptr(NULL) {
+	: _root(NULL), _size(0), _compare(from.value_comp()), _max_ptr(NULL), _min_ptr(NULL) {
 		_M_init_end_pointer();
 		*this = from;
-		_M_update_end_pointer();
 	}
 
 	~TreeRB() {
@@ -90,6 +65,7 @@ public:
 			return *this;
 		}
 		_M_assign(x);
+		_M_update_end_pointer();
 		return *this;
 	}
 
@@ -123,7 +99,7 @@ public:
 
 /* Modifiers */
 
-	iterator insert(const T& val) {
+	iterator insert(const value_type& val) {
 		_M_unset_end_pointer();
 
 		if (_min_ptr && _compare(val, _min_ptr->getValue())) {
@@ -139,7 +115,7 @@ public:
 		return _M_create_iterator(_added_node);
 	}
 
-	iterator insert(iterator position, const T& val) {
+	iterator insert(iterator position, const value_type& val) {
 		_M_unset_end_pointer();
 
 		node_pointer x = position.base();
@@ -156,22 +132,25 @@ public:
 		return _M_create_iterator(_added_node);
 	}
 
-	void erase(const T& val) {
+	void erase(const value_type& val) {
 		erase(find(val));
 	}
 
 	void erase(iterator position) {
 
-		_M_unset_end_pointer();
+		if (position == end()) {
+			return;
+		}
 
-		if (position.base()) {
-			_M_delete_node(position.base());
+		_M_unset_end_pointer();
+		node_pointer x = position.base();
+		if (x) {
+			_M_delete_node(x);
 		}
 
 		if (size() == 0) {
 			_M_bzero_tree();
 		}
-
 		_M_update_end_pointer();
 	}
 
@@ -190,32 +169,100 @@ public:
 		_M_reset_end_pointer();
 	}
 
-	iterator find(const T& val) {
+/* Observers */
+
+	value_compare value_comp() const {
+		return value_compare(_compare);
+	}
+
+/* Operations */
+
+	iterator find(const value_type& val) {
 		_M_unset_end_pointer();
 		iterator it = _M_create_iterator(_M_find(val));
 		_M_update_end_pointer();
 		return it;
 	}
 
-	const_iterator find(const T& val) const {
-		_M_unset_end_pointer();
-		iterator it = _M_create_iterator(_M_find(val));
-		_M_update_end_pointer();
+	const_iterator find(const value_type& val) const {
+		return _M_create_iterator(_M_find(val));
+	}
+
+	size_type count(const value_type& val) const {
+		return find(val) != end() ? 1 : 0;
+	}
+
+	iterator lower_bound(const value_type& k) {
+		return _M_lower_bound(k);
+	}
+
+	const_iterator lower_bound(const value_type& k) const {
+		return _M_lower_bound(k);
+	}
+
+	iterator upper_bound(const value_type& k) {
+		iterator it = _M_lower_bound(k);
+		if (_M_equal(*it, k)) {
+			++it;
+		}
+	
 		return it;
+	}
+
+	const_iterator upper_bound(const value_type& k) const {
+		const_iterator it = _M_lower_bound(k);
+		if (_M_equal(*it, k)) {
+			++it;
+		}
+	
+		return it;
+	}
+
+	ft::pair<iterator, iterator> equal_range(const value_type& val) {
+		iterator itlow = lower_bound(val);
+		iterator itup(itlow);
+		if (_M_equal(*itup, val)) {
+			++itup;
+		}
+		return ft::make_pair(itlow, itup);
+	}
+
+	ft::pair<const_iterator, const_iterator> equal_range(const value_type& val) const {
+		const_iterator itlow = lower_bound(val);
+		const_iterator itup(itlow);
+		if (_M_equal(*itup, val)) {
+			++itup;
+		}
+		return ft::make_pair(itlow, itup);
 	}
 
 private:
+
+	bool _M_equal(const value_type& a, const value_type& b) const {
+		return !(_compare(a, b) || _compare(b, a));
+	}
+
+
+private:
 /* Utilities */
-	node_pointer _M_new_node(const T& val) {
+	node_pointer _M_new_node(const value_type& val) {
 		return _M_new_node(val, NULL);
 	}
 
-	node_pointer _M_new_node(const T& val, node_pointer parent) {
+	node_pointer _M_new_node(const value_type& val, node_pointer parent) {
 		node_pointer x = _alloc.allocate(1);
 		_alloc.construct(x, node_type(val));
 		x->parent = parent;
 		_added_node = x;
 		return x;
+	}
+
+	node_pointer _M_convert_const_pointer(const_node_pointer x) {
+		return reinterpret_cast<node_pointer> (x);
+	}
+
+	iterator _M_convert_const_iterator(const_iterator x) {
+		return _M_create_iterator(_M_convert_const_pointer(x.base()));
 	}
 
 	void _M_destroy_node(node_pointer x) {
@@ -259,7 +306,7 @@ private:
 		return x;
 	}
 
-	node_pointer _M_find(const T& val) {
+	node_pointer _M_find(const value_type& val) {
 		node_pointer x = base();
 		while (x) {
 			if (_compare(val, x->getValue())) {
@@ -274,9 +321,9 @@ private:
 		return NULL;
 	}
 
-	const node_pointer _M_find(const T& val) const {
-		const node_pointer x = base();
-		while (x) {
+	node_pointer _M_find(const value_type& val) const {
+		node_pointer x = base();
+		while (x && x != _end_ptr) {
 			if (_compare(val, x->getValue())) {
 				x = x->left;
 			} else if (_compare(x->getValue(), val)) {
@@ -285,12 +332,57 @@ private:
 				return x;
 			}
 		}
-
 		return NULL;
 	}
 
+	iterator _M_lower_bound(const value_type& k) {
+		node_pointer x = base();
+
+		while (x && x != _end_ptr) {
+			if (_compare(k, x->getValue())) {
+				if (x->left == NULL) {
+					return _M_create_iterator(x);
+				}
+				x = x->left;
+			} else if (_compare(x->getValue(), k)) {
+				if (x->right == NULL) {
+					x = x->next();
+					return _M_create_iterator(x);
+				}
+				x = x->right;
+			} else {
+				return _M_create_iterator(x);
+			}
+		}
+
+		return end();
+	}
+
+	const_iterator _M_lower_bound(const value_type& k) const {
+		node_pointer x = base();
+
+		while (x && x != _end_ptr) {
+			if (_compare(k, x->getValue())) {
+				if (x->left == NULL) {
+					return _M_create_iterator(x);
+				}
+				x = x->left;
+			} else if (_compare(x->getValue(), k)) {
+				if (x->right == NULL) {
+					x = x->next();
+					return _M_create_iterator(x);
+				}
+				x = x->right;
+			} else {
+				return _M_create_iterator(x);
+			}
+		}
+
+		return end();
+	}
+
 	iterator _M_create_iterator(node_pointer ptr) {
-		if (_max_ptr == NULL || ptr == _end_ptr) {
+		if (_max_ptr == NULL || ptr == _end_ptr || ptr == NULL) {
 			return _M_end_iterator();
 		}
 
@@ -299,7 +391,7 @@ private:
 	}
 
 	const_iterator _M_create_iterator(node_pointer ptr) const {
-		if (_max_ptr == NULL || ptr == _end_ptr) {
+		if (_max_ptr == NULL || ptr == _end_ptr || ptr == NULL) {
 			return _M_end_iterator();
 		}
 
@@ -410,7 +502,7 @@ private:
 
 /* Insertion */
 
-	void _M_insert(node_pointer parent, const T& val) {
+	void _M_insert(node_pointer parent, const value_type& val) {
 		if (parent == NULL) {
 			_root = _M_new_node(val);
 		} else if (_compare(val, parent->getValue())) {
@@ -431,7 +523,7 @@ private:
 	}
 
 	/* Return parent of insertion position or node if present */
-	node_pointer _M_find_insert_position(const T& val) {
+	node_pointer _M_find_insert_position(const value_type& val) {
 		node_pointer node = base();
 		node_pointer parent = NULL;
 
@@ -721,11 +813,21 @@ private:
 		}
 	}
 
+/* Getters */
+
+	node_pointer base() {
+		return _root;
+	}
+
+	const node_pointer base() const {
+		return _root;
+	}
+
 public:
 	node_pointer _root;
 	allocator_node _alloc;
 	size_type _size;
-	compare_type _compare;
+	value_compare _compare;
 
 	node_pointer _added_node;
 	node_pointer _max_ptr;

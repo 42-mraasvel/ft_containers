@@ -129,7 +129,7 @@ public:
 		return *this;
 	}
 
-	IteratorAVL& operator--(int) {
+	IteratorAVL operator--(int) {
 		IteratorAVL temp(*this);
 		if (_end_reached == true) {
 			_ptr = *_max_ptr;

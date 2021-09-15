@@ -157,3 +157,57 @@ Red-Black Trees
 			// In case the color of the root changed
 			root = black;
 		}
+
+
+Tree Structure
+
+	Types:
+		iterator
+		const_iterator
+	
+	Constructors/Destructors:
+		Tree(const value_compare& comp);
+		Tree(const Tree& from)
+		~Tree();
+		Tree& operator=(const Tree& x);
+
+	Iterators:
+		iterator begin();
+		const_iterator begin() const;
+
+		iterator end();
+		const_iterator end() const;
+	
+	Capacity:
+		size()
+		max_size()
+	
+	Modifiers:
+		iterator insert(const value_type& val);
+		iterator insert(iterator position, const value_type& val);
+
+		void erase(const value_type& val);
+		void erase(iterator position);
+
+		void swap(TreeRB& x);
+		void clear();
+	
+	Observers:
+
+		value_compare value_comp() const;
+	
+	Operations
+
+		iterator find(const value_type& val);
+		const_iterator find(const value_type& val) const;
+
+		size_type count(const value_type& val) const;
+
+		iterator lower_bound(const value_type& k);
+		const_iterator lower_bound(const value_type& k) const;
+
+		iterator upper_bound(const value_type& k);
+		const_iterator upper_bound(const value_type& k) const;
+
+		ft::pair<iterator, iterator> equal_range(const value_type& val);
+		ft::pair<const_iterator, const_iterator> equal_range(const value_type& val) const;

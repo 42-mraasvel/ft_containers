@@ -16,15 +16,20 @@ public:
 	static const color_type RED = true;
 	static const color_type BLACK = false;
 
+	typedef T value_type;
+	typedef NodeRB node_type;
+	typedef node_type* node_pointer;
+	typedef const node_type* const_node_pointer;
+
 public:
 
 	NodeRB()
-	: left(NULL), right(NULL), parent(NULL), color(RED) {}
+	: left(NULL), right(NULL), parent(NULL), color(RED), value() {}
 
-	NodeRB(const T& val)
+	NodeRB(const value_type& val)
 	: left(NULL), right(NULL), parent(NULL), color(RED), value(val) {}
 
-	NodeRB(const T& val, NodeRB* parent)
+	NodeRB(const value_type& val, node_pointer parent)
 	: left(NULL), right(NULL), parent(parent), color(RED), value(val) {}
 
 	NodeRB(const NodeRB& rhs)
@@ -41,12 +46,12 @@ public:
 		return *this;
 	}
 
-	const T& getValue() const {
+	const value_type& getValue() const {
 		return value;
 	}
 
 /* Iterating */
-	NodeRB* next() {
+	node_pointer next() {
 		if (right) {
 			return _M_find_min(right);
 		} else if (parent && parent->left == static_cast<void*>(this)) {
@@ -55,7 +60,7 @@ public:
 		return _M_next_node(parent);
 	}
 
-	const NodeRB* next() const {
+	const node_pointer next() const {
 		if (right) {
 			return _M_find_min(right);
 		} else if (parent && parent->left == static_cast<void*>(this)) {
@@ -64,7 +69,7 @@ public:
 		return _M_next_node(parent);
 	}
 
-	NodeRB* prev() {
+	node_pointer prev() {
 		if (left) {
 			return _M_find_max(left);
 		} else if (parent && parent->right == static_cast<void*>(this)) {
@@ -73,7 +78,7 @@ public:
 		return _M_prev_node(parent);
 	}
 
-	const NodeRB* prev() const {
+	const node_pointer prev() const {
 		if (left) {
 			return _M_find_max(left);
 		} else if (parent && parent->right == static_cast<void *>(this)) {
@@ -83,8 +88,8 @@ public:
 	}
 
 private:
-	NodeRB* _M_next_node(NodeRB* node) {
-		const NodeRB* prev = NULL;
+	node_pointer _M_next_node(node_pointer node) {
+		const_node_pointer prev = NULL;
 		while (node) {
 			if (_M_node_equal(node->left, prev)) {
 				return node;
@@ -95,8 +100,8 @@ private:
 		return NULL;
 	}
 
-	NodeRB* _M_prev_node(NodeRB* node) {
-		const NodeRB* prev = NULL;
+	node_pointer _M_prev_node(node_pointer node) {
+		const_node_pointer prev = NULL;
 		while (node) {
 			if (_M_node_equal(node->right, prev)) {
 				return node;
@@ -107,12 +112,12 @@ private:
 		return NULL;
 	}
 
-	bool _M_node_equal(const NodeRB* a, const NodeRB* b) const {
+	bool _M_node_equal(const_node_pointer a, const_node_pointer b) const {
 		return a == b && a != NULL;
 	}
 
 
-	NodeRB* _M_find_max(NodeRB* node) {
+	node_pointer _M_find_max(node_pointer node) {
 		if (!node) {
 			return NULL;
 		}
@@ -122,7 +127,7 @@ private:
 		return node;
 	}
 
-	NodeRB* _M_find_min(NodeRB* node) {
+	node_pointer _M_find_min(node_pointer node) {
 		if (!node) {
 			return NULL;
 		}
@@ -134,11 +139,11 @@ private:
 
 public:
 
-	NodeRB* left;
-	NodeRB* right;
-	NodeRB* parent;
+	node_pointer left;
+	node_pointer right;
+	node_pointer parent;
 	color_type color;
-	T value;
+	value_type value;
 
 };
 

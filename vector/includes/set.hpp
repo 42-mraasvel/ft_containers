@@ -5,6 +5,8 @@
 # include "red_black/tree_red_black.hpp"
 # include "reverse_iterator.hpp"
 # include "pair.hpp"
+# include "equal.hpp"
+# include "lexicographical_compare.hpp"
 
 # include <cstddef> // size_t
 # include <memory> // std::allocator
@@ -17,7 +19,7 @@ template <class T,
 class set {
 
 private:
-	typedef ft::TreeRB<T, Compare, Alloc> tree_type;
+	typedef ft::TreeRB<const T, Compare, Alloc> tree_type;
 public:
 /* Public Member Types */
 	typedef T key_type;
@@ -34,13 +36,11 @@ public:
 	/* Iterators */
 
 	typedef typename tree_type::iterator iterator;
-	typedef typename tree_type::const_iterator const_iterator;
-
+	typedef typename tree_type::iterator const_iterator;
 	typedef ft::reverse_iterator<iterator> reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-	// typedef ft::iterator_traits<iterator>::difference_type difference_type;
-	typedef ptrdiff_t difference_type;
+	typedef typename ft::iterator_traits<iterator>::difference_type difference_type;
 	typedef size_t size_type;
 
 public:
@@ -125,6 +125,9 @@ public:
 	}
 
 	iterator insert (iterator position, const value_type& val) {
+		if (position == end()) {
+			return insert(val).first;
+		}
 		return _tree.insert(position, val);
 	}
 
@@ -137,7 +140,7 @@ public:
 	}
 
 	void erase(iterator position) {
-		_tree.erase(position);
+		return _tree.erase(position);
 	}
 
 	size_type erase(const value_type& val) {
@@ -160,12 +163,89 @@ public:
 		_tree.clear();
 	}
 
+/* Observers */
+	key_compare key_comp() const {
+		return _tree.value_comp();
+	}
+
+	value_compare value_comp() const {
+		return _tree.value_comp();
+	}
+
+/* Operations */
+	iterator find(const value_type& val) const {
+		return _tree.find(val);
+	}
+
+	size_type count(const value_type& val) const {
+		return _tree.count(val);
+	}
+
+	iterator lower_bound(const value_type& val) const {
+		return _tree.lower_bound(val);
+	}
+
+	iterator upper_bound(const value_type& val) const {
+		return _tree.upper_bound(val);
+	}
+
+	ft::pair<iterator, iterator> equal_range(const value_type& val) const {
+		return _tree.equal_range(val);
+	}
+
+/* Allocator */
+	allocator_type get_allocator() const {
+		return _alloc;
+	}
 
 public:
 /* Private Member Variables */
 	tree_type _tree;
 	allocator_type _alloc;
 };
+
+template <class T, class Compare, class Alloc>
+void swap(ft::set<T, Compare, Alloc>& lhs,
+		ft::set<T, Compare, Alloc>& rhs) {
+	lhs.swap(rhs);
+}
+
+/* Comparison Operators */
+
+template< class Key, class Compare, class Alloc >
+bool operator==(const ft::set<Key,Compare,Alloc>& lhs,
+				const ft::set<Key,Compare,Alloc>& rhs ) {
+	if (lhs.size() != rhs.size()) {
+		return false;
+	}
+
+	return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+template< class Key, class Compare, class Alloc >
+bool operator!=(const ft::set<Key,Compare,Alloc>& lhs,
+				const ft::set<Key,Compare,Alloc>& rhs) {
+	return !(lhs == rhs);
+}
+template< class Key, class Compare, class Alloc >
+bool operator<( const ft::set<Key,Compare,Alloc>& lhs,
+				const ft::set<Key,Compare,Alloc>& rhs) {
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+template< class Key, class Compare, class Alloc >
+bool operator<=(const ft::set<Key,Compare,Alloc>& lhs,
+				const ft::set<Key,Compare,Alloc>& rhs) {
+	return !(rhs < lhs);
+}
+template< class Key, class Compare, class Alloc >
+bool operator>( const ft::set<Key,Compare,Alloc>& lhs,
+				const ft::set<Key,Compare,Alloc>& rhs) {
+	return rhs < lhs;
+}
+template< class Key, class Compare, class Alloc >
+bool operator>=(const ft::set<Key,Compare,Alloc>& lhs,
+				const ft::set<Key,Compare,Alloc>& rhs) {
+	return !(lhs < rhs);
+}
 
 }
 

@@ -4,7 +4,7 @@
 # include "pair.hpp"
 # include "less.hpp"
 # include "reverse_iterator.hpp"
-# include "tree_avl.hpp"
+# include "red_black/tree_red_black.hpp"
 # include "equal.hpp"
 # include "lexicographical_compare.hpp"
 
@@ -39,7 +39,7 @@ public:
 	typedef typename allocator_type::const_pointer		const_pointer;
 
 private:
-	typedef TreeAVL<value_type, value_compare, allocator_type>	tree_type;
+	typedef TreeRB<value_type, value_compare, allocator_type>	tree_type;
 
 public:
 	typedef typename tree_type::iterator iterator;
@@ -50,51 +50,26 @@ public:
 	typedef typename iterator_traits<iterator>::difference_type	difference_type;
 	typedef size_t size_type;
 
-
-/*
-
-
-************ TESTING PURPOSES, REMOVE ON TURNIN **********
-
-*/
-public:
-	typename tree_type::node_pointer root() {
-		return tree().root();
-	}
-
-	typename tree_type::node_pointer max() {
-		return tree().max();
-	}
-
-	typename tree_type::node_pointer min() {
-		return tree().min();
-	}
-
 public:
 /* Constructors / Destructor */
 
 	/* empty */
 	explicit map(const key_compare& key = key_compare(),
 				const allocator_type& alloc = allocator_type())
-	: _tree(value_compare(key)) {
-		(void)alloc;
-	}
+	: _tree(value_compare(key)), _alloc(alloc) {}
 
 	/* range */
 	template <class InputIterator>
 	map(InputIterator first, InputIterator last,
 		const key_compare& key = key_compare(),
 		const allocator_type& alloc = allocator_type())
-	: _tree(value_compare(key)) {
-		while (first != last) {
-			tree().insert(*first);
-			++first;
-		}
+	: _tree(value_compare(key)), _alloc(alloc) {
+		insert(first, last);
 	}
 
 	/* copy */
 	map(const map& x)
-	: _tree(x._tree) {}
+	: _tree(x._tree), _alloc(x._alloc) {}
 
 	~map() {}
 
@@ -185,7 +160,6 @@ public:
 		}
 	}
 
-/* SET ROOT/MIN/MAX PTR TO NULL IF SIZE == 0 */
 	void erase(iterator position) {
 		return _tree.erase(position);
 	}
@@ -197,11 +171,8 @@ public:
 	}
 
 	void erase(iterator first, iterator last) {
-		iterator prev = first;
 		while (first != last) {
-			++first;
-			erase(prev);
-			prev = first;
+			_tree.erase(first++);
 		}
 	}
 
@@ -255,11 +226,17 @@ public:
 	}
 
 	ft::pair<iterator,iterator> equal_range(const key_type& k) {
-		return ft::make_pair(lower_bound(k), upper_bound(k));
+		return _tree.equal_range(ft::make_pair(k, mapped_type()));
 	}
 
 	ft::pair<const_iterator,const_iterator> equal_range(const key_type& k) const {
-		return ft::make_pair(lower_bound(k), upper_bound(k));
+		return _tree.equal_range(ft::make_pair(k, mapped_type()));
+	}
+
+/* Allocator */
+
+	allocator_type get_allocator() const {
+		return _alloc;
 	}
 
 
@@ -276,6 +253,7 @@ private:
 /* Private Member Variables */
 private:
 	tree_type _tree;
+	allocator_type _alloc;
 
 };
 

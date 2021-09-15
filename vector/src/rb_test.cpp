@@ -1,114 +1,114 @@
-#include "red_black/tree_red_black.hpp"
-#include "red_black/node_red_black.hpp"
-#include <cstdlib>
-#include <cassert>
-#include <iostream>
-#include <cstddef>
+// #include "red_black/tree_red_black.hpp"
+// #include "red_black/node_red_black.hpp"
+// #include <cstdlib>
+// #include <cassert>
+// #include <iostream>
+// #include <cstddef>
 
-/*
-RBT INVARIANT
+// /*
+// RBT INVARIANT
 
-	1. Every node has a colour either red or black.
-	2. The root and the leaves (NIL's) of the tree are always black.
-	3. There are no two adjacent red nodes (A red node cannot have a red parent or red child).
-	4. Every path from a node (including root) to any of its descendants NULL nodes has the same number of black nodes.
-*/
-using ft::NodeRB;
-using ft::TreeRB;
+// 	1. Every node has a colour either red or black.
+// 	2. The root and the leaves (NIL's) of the tree are always black.
+// 	3. There are no two adjacent red nodes (A red node cannot have a red parent or red child).
+// 	4. Every path from a node (including root) to any of its descendants NULL nodes has the same number of black nodes.
+// */
+// using ft::NodeRB;
+// using ft::TreeRB;
 
-template <typename Node>
-bool isBlack(const Node* root) {
-	return root == NULL || root->color == Node::BLACK;
-}
+// template <typename Node>
+// bool isBlack(const Node* root) {
+// 	return root == NULL || root->color == Node::BLACK;
+// }
 
-template <typename Node>
-int blackHeight(const Node* root) {
-	if (root == NULL) {
-		return 0;
-	}
+// template <typename Node>
+// int blackHeight(const Node* root) {
+// 	if (root == NULL) {
+// 		return 0;
+// 	}
 
-	int blackHeightLeft = blackHeight(root->left);
-	int blackHeightRight = blackHeight(root->right);
-	assert(blackHeightLeft == blackHeightRight);
+// 	int blackHeightLeft = blackHeight(root->left);
+// 	int blackHeightRight = blackHeight(root->right);
+// 	assert(blackHeightLeft == blackHeightRight);
 
-	if (isBlack(root)) {
-		return blackHeightLeft + 1;
-	}
+// 	if (isBlack(root)) {
+// 		return blackHeightLeft + 1;
+// 	}
 
-	return blackHeightLeft;
-}
+// 	return blackHeightLeft;
+// }
 
-template <typename T>
-int testNode(const NodeRB<T>* x) {
-	if (x == NULL) {
-		return 0;
-	}
+// template <typename T>
+// int testNode(const NodeRB<T>* x) {
+// 	if (x == NULL) {
+// 		return 0;
+// 	}
 
-	if (x->left) {
-		assert(x->left->parent == x);
-	}
+// 	if (x->left) {
+// 		assert(x->left->parent == x);
+// 	}
 
-	if (x->right) {
-		assert(x->right->parent == x);
-	}
+// 	if (x->right) {
+// 		assert(x->right->parent == x);
+// 	}
 
-	if (x->color == NodeRB<T>::RED) {
-		assert(x->parent->color == NodeRB<T>::BLACK);
-	}
+// 	if (x->color == NodeRB<T>::RED) {
+// 		assert(x->parent->color == NodeRB<T>::BLACK);
+// 	}
 
-	assert(testNode(x->left) == testNode(x->right));
-	return blackHeight(x);
-}
+// 	assert(testNode(x->left) == testNode(x->right));
+// 	return blackHeight(x);
+// }
 
-template <typename T>
-bool testRedBlackInvariant(const NodeRB<T>* root) {
-	if (root == NULL) {
-		return true;
-	}
-	assert(root->color == NodeRB<T>::BLACK);
-	testNode(root);
-	return true;
-}
+// template <typename T>
+// bool testRedBlackInvariant(const NodeRB<T>* root) {
+// 	if (root == NULL) {
+// 		return true;
+// 	}
+// 	assert(root->color == NodeRB<T>::BLACK);
+// 	testNode(root);
+// 	return true;
+// }
 
 
-template <typename Node>
-void printNode(const Node* x) {
-	std::cout << "VAL(" << x->value << "), COLOR(";
-	if (x->color == Node::BLACK) {
-		std::cout << "BLACK";
-	} else {
-		std::cout << "RED";
-	}
-	std::cout << "), HEIGHT(" << blackHeight(x) << ")" << std::endl;
-}
+// template <typename Node>
+// void printNode(const Node* x) {
+// 	std::cout << "VAL(" << x->value << "), COLOR(";
+// 	if (x->color == Node::BLACK) {
+// 		std::cout << "BLACK";
+// 	} else {
+// 		std::cout << "RED";
+// 	}
+// 	std::cout << "), HEIGHT(" << blackHeight(x) << ")" << std::endl;
+// }
 
-template <typename Node>
-void printTree(const Node* root) {
-	if (root == NULL) {
-		return;
-	}
+// template <typename Node>
+// void printTree(const Node* root) {
+// 	if (root == NULL) {
+// 		return;
+// 	}
 
-	printNode(root);
-	printTree(root->left);
-	printTree(root->right);
-}
+// 	printNode(root);
+// 	printTree(root->left);
+// 	printTree(root->right);
+// }
 
-void testRedBlack() {
-	ft::TreeRB<int> m;
+// void testRedBlack() {
+// 	ft::TreeRB<int> m;
 
-	for (int i = 0; i < 2; ++i) {
-		m.insert(i);
-	}
+// 	for (int i = 0; i < 2; ++i) {
+// 		m.insert(i);
+// 	}
 
-	// m.erase(4);
+// 	// m.erase(4);
 
-	std::cout << "SIZE(" << m.size() << ')' << std::endl;
+// 	std::cout << "SIZE(" << m.size() << ')' << std::endl;
 
-	TreeRB<int>::node_pointer root = m.base();
-	printTree(root);
+// 	TreeRB<int>::node_pointer root = m.base();
+// 	printTree(root);
 
-	std::cout << testRedBlackInvariant(root) << std::endl;
+// 	std::cout << testRedBlackInvariant(root) << std::endl;
 	
-	m.clear();
+// 	m.clear();
 
-}
+// }

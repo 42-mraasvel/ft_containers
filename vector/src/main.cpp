@@ -70,31 +70,21 @@ random_access_iterator_tag;
 
 void testRedBlack();
 
+template <typename C>
+void printContainer(const C& x, const std::string& name) {
+	std::cout << name << ":";
+	for (auto it = x.begin(); it != x.end(); ++it) {
+		std::cout << ' ' << it->first;
+	}
+	std::cout << std::endl;
+}
+
 int main() {
-	NS::set<int> s;
 
-	s.insert(42);
+	ft::map<int, int> s;
 
-	auto it = s.end();
-	--it;
-	std::cout << *it << std::endl;
-
-	it = s.begin();
-
-	std::cout << it.base() << ", " << s._tree._min_ptr << std::endl;
-
-	++it;
-	std::cout << it.base() << ", " << s._tree._end_ptr << std::endl;
-
-	// auto rit = s.rend();
-	// --rit;
-	// std::cout << s._tree._end_ptr << std::endl;
-	// std::cout << s._tree._min_ptr << std::endl;
-	// std::cout << rit.base().base() << std::endl;
-	// std::cout << *rit << std::endl;
-	// REQUIRE(*rit == 42);
-	// ++rit;
-	// REQUIRE(rit == s.rend());
-	return 0;
+	for (int i = 0; i < 10000; ++i) {
+		s.insert(ft::make_pair(i, i));
+	}
 }
 #endif /* CATCH_TEST_ENABLED */
