@@ -7,7 +7,7 @@ CXX = clang++
 CXXFLAGS = -Wall -Wextra -Werror
 IFLAGS = -I$(IDIR)
 
-CXXFLAGS += -std=c++98 -pedantic
+CXXFLAGS += -std=c++98 -pedantic -O3
 # Debugging
 DFLAGS = -g3 -fsanitize=address
 # CXXFLAGS += $(DFLAGS)

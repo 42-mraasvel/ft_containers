@@ -788,7 +788,7 @@ private:
 /* End Pointer Management */
 	void _M_init_end_pointer() {
 		_end_ptr = _alloc.allocate(1);
-		_alloc.construct(_end_ptr);
+		_alloc.construct(_end_ptr, node_type());
 		_end_ptr->color = RED;
 	}
 
