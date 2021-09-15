@@ -11,13 +11,20 @@ template <typename Container>
 void VectorInsert() {
 	Container v;
 
-	// v.reserve(100 * MILLION);
-	for (int i = 0; i < 250 * MILLION; ++i) {
+	const int TOTAL = 250 * MILLION;
+
+	for (int i = 0; i < TOTAL; ++i) {
 		v.push_back(i);
 	}
 
-	assert(v.size() == 250 * MILLION);
+	v.clear();
+	v.reserve(TOTAL);
+	for (int i = 0; i < TOTAL; ++i) {
+		v.push_back(i);
+	}
 }
+
+
 
 void VectorTests() {
 	BenchmarkTest(VectorInsert<std::vector<int> >, "Vector Insert", "std");
