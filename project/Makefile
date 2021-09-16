@@ -12,7 +12,7 @@ $(OBJ): $(ODIR)/%.o: $(SDIR)/%.cpp Makefile
 	$(CXX) -c -o $@ $< $(CXXFLAGS) $(IFLAGS)
 $(DDIR)/%.d: $(SDIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $< -MM -MF $@ -MT $(ODIR)/$*.o $(IFLAGS)
+	@$(CXX) $< -MM -MF $@ -MT $(ODIR)/$*.o $(CXXFLAGS) $(IFLAGS)
 
 # Cleaning
 clean:
@@ -22,5 +22,12 @@ fclean: clean
 	$(RM) -r $(DDIR)
 re: fclean
 	$(MAKE) all
+
+# Catch compilation rule
+.PHONY: catch catch_std
+catch:
+	$(MAKE) all USING_CATCH=1
+catch_std:
+	$(MAKE) all USING_CATCH=1 USING_STD=1
 
 -include $(DEP)

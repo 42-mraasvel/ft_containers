@@ -123,7 +123,6 @@ public:
 
 		_M_insert(x, val);
 		_M_check_minmax();
-
 		_M_update_end_pointer();
 		return _M_create_iterator(_added_node);
 	}

@@ -10,13 +10,16 @@ namespace Testing {
 /* Benchmarking */
 typedef void (*TestFnc_t)();
 
-void BenchmarkTest(TestFnc_t tester, const std::string& name, const std::string& name_space);
+double BenchmarkTest(TestFnc_t tester, const std::string& name, const std::string& name_space);
 
 /* Vector */
 void VectorTests();
 
 /* Map */
 void MapTests();
+
+/* Set */
+void SetTests();
 
 }
 

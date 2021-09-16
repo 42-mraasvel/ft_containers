@@ -120,11 +120,9 @@ public:
 		return ft::make_pair(it, old_size > size());
 	}
 
-	iterator insert (iterator position, const value_type& val) {
-		if (position == end()) {
-			return insert(val).first;
-		}
-		return _tree.insert(position, val);
+	iterator insert(iterator position, const value_type& val) {
+		(void)position;
+		return _tree.insert(val);
 	}
 
 	template <class InputIterator>

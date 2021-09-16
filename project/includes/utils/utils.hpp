@@ -4,7 +4,7 @@
 # include "is_signed.hpp"
 
 # include <cstddef>
-
+#include <iostream>
 namespace ft {
 
 template <class InputIterator, class OutputIterator>

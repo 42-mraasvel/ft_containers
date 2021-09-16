@@ -24,8 +24,6 @@ public:
 	typedef Compare										key_compare;
 	typedef Alloc										allocator_type;
 
-
-
 	typedef typename allocator_type::reference			reference;
 	typedef typename allocator_type::const_reference	const_reference;
 	typedef typename allocator_type::pointer			pointer;
@@ -138,10 +136,8 @@ public:
 
 	/* with hint */
 	iterator insert(iterator position, const value_type& val) {
-		if (position == end()) {
-			return insert(val).first;
-		}
-		return _tree.insert(position, val);
+		(void)position;
+		return _tree.insert(val);
 	}
 
 	/* range */
