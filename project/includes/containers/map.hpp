@@ -142,7 +142,8 @@ public:
 
 	/* range */
 	template <class InputIterator>
-	void insert(InputIterator first, InputIterator last) {
+	void insert(InputIterator first, InputIterator last,
+				typename InputIterator::iterator_category* = 0) {
 		while (first != last) {
 			_tree.insert(*first);
 			++first;
