@@ -14,5 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: make
-      run: cd vector && make
-      # run: cd vector && ./run.sh catch
+      run: cd vector && make \
+      && ./run.sh \
+      && ./run.sh catch
