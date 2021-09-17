@@ -4,6 +4,10 @@
 
 #include "containers/vector.hpp"
 #include "reimplemented/iterator_traits.hpp"
+#include "reimplemented/allocator_traits.hpp"
+#include "utils/is_allocator.hpp"
+#include "utils/is_iterator.hpp"
+#include "utils/is_same.hpp"
 #include <vector>
 #include <iterator>
 
@@ -15,55 +19,20 @@
 	typedef std::random_access_iterator_tag		iterator_category;
 */
 
-template <typename T>
-struct make_t {
-	typedef void type;
-};
-
-template <typename T>
-struct is_iterator {
-
-	typedef void* valid[2];
-	typedef void* invalid[1];
-
-
-	template <typename U>
-	static valid& test( typename make_t<typename U::difference_type>::type*,
-						typename make_t<typename U::value_type>::type*,
-						typename make_t<typename U::pointer>::type*,
-						typename make_t<typename U::reference>::type*,
-						typename make_t<typename U::iterator_category>::type*
-	);
-	template <typename>
-	static invalid& test(...);
-
-	static const bool value = sizeof(test<T>(0, 0, 0, 0, 0)) == sizeof(valid);
-};
-
-template <typename T>
-struct is_iterator<T*> {
-	static const bool value = true;
-};
-
-template <typename T>
-struct is_iterator<const T*> {
-	static const bool value = true;
-};
-
 int main() {
 
 	std::cout << std::boolalpha;
 
 	int table[] = {0, 1, 2, 3, 4};
 	int size = sizeof(table) / sizeof(int);
+	bool table2[] = {true, false, false, true, true};
 
-	static std::vector<int> v {0, 1, 2, 3, 4};
+	ft::vector<int, std::allocator<int> > v;
 
-
-	std::cout << is_iterator<int>::value << std::endl;
-	std::cout << is_iterator<FakeIterator<int>>::value << std::endl;
-	std::cout << is_iterator<std::vector<int>::iterator>::value << std::endl;
-	std::cout << is_iterator<int*>::value << std::endl;
+	FakeIterator<int> it(table);
+	FakeIterator<int> ite(table + size);
+	FakeIterator<bool> it2(table2);
+	ft::lexicographical_compare(it, ite, it2, it2 + sizeof(table2) / sizeof(bool));
 
 
 	return 0;

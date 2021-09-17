@@ -2,10 +2,13 @@
 # define SET_HPP
 
 # include "utils/less.hpp"
+# include "utils/is_allocator.hpp"
+# include "utils/is_same.hpp"
 # include "red_black/tree_rb.hpp"
 # include "reimplemented/reverse_iterator.hpp"
 # include "reimplemented/equal.hpp"
 # include "reimplemented/lexicographical_compare.hpp"
+# include "reimplemented/enable_if.hpp"
 
 namespace ft {
 
@@ -44,14 +47,19 @@ public:
 
 /* Constructors/Destructor */
 	explicit set(const key_compare& comp = key_compare(),
-				const allocator_type& alloc = allocator_type())
+				const allocator_type& alloc = allocator_type(),
+				typename ft::enable_if<ft::is_allocator<allocator_type>::value, bool>::type = true,
+				typename ft::enable_if<ft::is_same<value_type, typename allocator_type::value_type>::value, bool>::type = true)
 	: _tree(comp), _alloc(alloc) {
 	}
 
 	template <class InputIterator>
 	set(InputIterator first, InputIterator last,
 		const key_compare& comp = key_compare(),
-		const allocator_type& alloc = allocator_type())
+		const allocator_type& alloc = allocator_type(),
+		typename ft::enable_if<ft::is_iterator<InputIterator>::value, bool>::type = true,
+		typename ft::enable_if<ft::is_allocator<allocator_type>::value, bool>::type = true,
+		typename ft::enable_if<ft::is_same<value_type, typename allocator_type::value_type>::value, bool>::type = true)
 	: _tree(comp), _alloc(alloc) {
 		insert(first, last);
 	}
@@ -127,7 +135,7 @@ public:
 
 	template <class InputIterator>
 	void insert(InputIterator first, InputIterator last,
-				typename InputIterator::iterator_category* = 0) {
+				typename ft::enable_if< ft::is_iterator<InputIterator>::value, bool>::type = true) {
 		while (first != last) {
 			_tree.insert(*first);
 			++first;

@@ -1,10 +1,10 @@
 if [ "$1" == "catch" ]; then
 	if [ "$2" == "std" ]; then
 		# ./run.sh catch std
-		make catch_std && ./catch_build_std.exe
+		make catch_std && ./catch_std.exe
 	else
 		# ./run.sh catch
-		make catch && ./catch_build.exe
+		make catch && ./catch.exe
 	fi
 else
 	# ./run.sh

@@ -11,9 +11,13 @@ Resources:
 
 # include "utils/utils.hpp"
 # include "utils/distance.hpp"
+# include "utils/is_allocator.hpp"
+# include "utils/is_same.hpp"
 # include "reimplemented/reverse_iterator.hpp"
 # include "reimplemented/equal.hpp"
 # include "reimplemented/lexicographical_compare.hpp"
+
+# include <stdexcept>
 
 namespace ft {
 
@@ -42,24 +46,31 @@ public:
 
 /* Constructors */
 	// Default
-	explicit vector(const allocator_type& alloc = allocator_type())
+	explicit vector(const allocator_type& alloc = allocator_type(),
+					typename ft::enable_if<ft::is_allocator<allocator_type>::value, bool>::type = true,
+					typename ft::enable_if<ft::is_same<value_type, typename allocator_type::value_type>::value, bool>::type = true)
 	: _alloc(alloc), _capacity(0), _size(0), _table(NULL) {}
 
 	// fill
 	explicit vector(size_type n, const value_type& val = value_type(),
-					const allocator_type& alloc = allocator_type())
+					const allocator_type& alloc = allocator_type(),
+					typename ft::enable_if<ft::is_allocator<allocator_type>::value, bool>::type = true,
+					typename ft::enable_if<ft::is_same<value_type, typename allocator_type::value_type>::value, bool>::type = true)
 	: _alloc(alloc), _capacity(n), _size(n) {
 
 		_table = _allocate(n);
 		_initialize_mem(_table, n, val);
 	}
 
-	// Range: use template enable_if to prevent integrals from calling this
+	// Range
 	template <class InputIterator>
-	vector(InputIterator first, InputIterator last,
-			const allocator_type& alloc = allocator_type())
+	vector( InputIterator first, InputIterator last,
+			const allocator_type& alloc = allocator_type(),
+			typename ft::enable_if<ft::is_iterator<InputIterator>::value, bool>::type = true,
+			typename ft::enable_if<ft::is_allocator<allocator_type>::value, bool>::type = true,
+			typename ft::enable_if<ft::is_same<value_type, typename allocator_type::value_type>::value, bool>::type = true)
 	: _alloc(alloc), _capacity(0), _size(0), _table(NULL) {
-		_internal_constructor(first, last, _is_integral(first));
+		_range_construct_dispatch(first, last, ft::_iterator_category(first));
 	}
 
 	// Copy
@@ -206,13 +217,14 @@ public:
 /* Modifiers */
 	// Range
 	template <class InputIterator>
-	void assign(InputIterator first, InputIterator last) {
-		_assign_dispatch(first, last);
+	void assign(InputIterator first, InputIterator last,
+				typename ft::enable_if< ft::is_iterator<InputIterator>::value, bool>::type = true) {
+		_assign_range(first, last, ft::_iterator_category(first));
 	}
 
 	// Fill
 	void assign(size_type n, const value_type& val) {
-		_assign_dispatch(n, val);
+		_assign_fill(n, val);
 	}
 
 	void push_back(const value_type& val) {
@@ -228,18 +240,19 @@ public:
 
 	// Single Element
 	iterator insert(iterator position, const value_type& val) {
-		return _insert_dispatch(position, 1, val, ft::true_type());
+		return _insert_fill(position, 1, val);
 	}
 
 	// Fill
 	void insert(iterator position, size_type n, const value_type& val) {
-		_insert_dispatch(position, n, val, ft::true_type());
+		_insert_fill(position, n, val);
 	}
 
 	// Range
 	template <class InputIterator>
-	void insert(iterator position, InputIterator first, InputIterator last) {
-		_insert_dispatch(position, first, last, ft::_is_integral(first));
+	void insert(iterator position, InputIterator first, InputIterator last,
+				typename ft::enable_if< ft::is_iterator<InputIterator>::value, bool>::type = true) {
+		_insert_range(position, first, last, ft::_iterator_category(first));
 	}
 
 	iterator erase (iterator position) {
@@ -279,25 +292,6 @@ public:
 private:
 /* Internal Construction, Initialization Dispatching */
 
-	/* Fill */
-	void _internal_constructor(size_type n, const value_type& val = value_type(),
-							ft::true_type integral = ft::true_type()) {
-		(void)integral;
-		_table = _allocate(n);
-		_size = n;
-		_capacity = n;
-		_initialize_mem(_table, n, val);
-	}
-
-	/* Range Constructors */
-	template <class InputIterator>
-	void _internal_constructor(InputIterator first, InputIterator last,
-							ft::false_type integral = ft::false_type()) {
-		/* Iterator Tag Dispatch */
-		(void)integral;
-		_range_construct_dispatch(first, last, ft::_iterator_category(first));
-	}
-
 	template <class InputIterator>
 	void _range_construct_dispatch(InputIterator first, InputIterator last,
 									ft::input_iterator_tag) {
@@ -315,17 +309,6 @@ private:
 	}
 
 /* Assign Dispatching */
-
-	void _assign_dispatch(size_type n, const value_type& val) {
-		_assign_fill(n, val);
-	}
-
-	template <class InputIterator>
-	void _assign_dispatch(InputIterator first, InputIterator last, \
-	typename ft::enable_if<!ft::is_integral<InputIterator>::value, bool>::type = true) {
-		_assign_range(first, last, ft::_iterator_category(first));
-	}
-
 	void _assign_fill(size_type n, const value_type& val) {
 		clear();
 		reserve(n);
@@ -351,18 +334,6 @@ private:
 	}
 
 /* Insert Dispatching */
-
-	iterator _insert_dispatch(iterator position, size_type n,
-							const value_type& val, ft::true_type) {
-		return _insert_fill(position, n, val);
-	}
-
-	template <class InputIterator>
-	iterator _insert_dispatch(iterator position, InputIterator first,
-							InputIterator last, ft::false_type) {
-		return _insert_range(position, first, last, ft::_iterator_category(first));
-	}
-
 	iterator _insert_fill(iterator position, size_type n, const value_type& val) {
 		if (size() + n > capacity()) {
 			return _insert_fill_resize(position, n, val);

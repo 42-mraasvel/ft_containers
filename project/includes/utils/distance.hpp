@@ -2,6 +2,7 @@
 # define DISTANCE_HPP
 
 # include "reimplemented/iterator_traits.hpp"
+# include "utils/is_iterator.hpp"
 
 namespace ft {
 
@@ -30,7 +31,8 @@ namespace ft {
 	}
 
 template <class InputIterator>
-ptrdiff_t distance(InputIterator first, InputIterator last) {
+ptrdiff_t distance(InputIterator first, InputIterator last,
+					typename ft::enable_if<ft::is_iterator<InputIterator>::value, bool>::type = true) {
 	return _base_detail::_distance_base(first, last, _iterator_category(first));
 }
 
