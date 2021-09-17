@@ -10,6 +10,7 @@
 #include "utils/is_same.hpp"
 #include <vector>
 #include <iterator>
+#include <map>
 
 /*
 	typedef ptrdiff_t							difference_type;
@@ -21,19 +22,14 @@
 
 int main() {
 
-	std::cout << std::boolalpha;
+	std::multimap<int, int> m;
 
-	int table[] = {0, 1, 2, 3, 4};
-	int size = sizeof(table) / sizeof(int);
-	bool table2[] = {true, false, false, true, true};
+	m.insert(std::make_pair(1, 42));
+	m.insert(std::make_pair(1, 69));
 
-	ft::vector<int, std::allocator<int> > v;
+	auto it = m.find(1);
 
-	FakeIterator<int> it(table);
-	FakeIterator<int> ite(table + size);
-	FakeIterator<bool> it2(table2);
-	ft::lexicographical_compare(it, ite, it2, it2 + sizeof(table2) / sizeof(bool));
-
+	std::cout << it->second << std::endl;
 
 	return 0;
 }
