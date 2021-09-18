@@ -39,60 +39,11 @@ void Benchmarking() {
 
 }
 
-
-class AllocatedClass {
-
-public:
-	AllocatedClass() {
-		data = new char[10];
-	}
-
-	AllocatedClass(int x)
-	: x(x) {
-		data = new char[10];
-	}
-
-	bool operator<(const AllocatedClass& rhs) const {
-		return x < rhs.x;
-	}
-
-	AllocatedClass(const AllocatedClass& rhs)
-	: data(NULL) {
-		*this = rhs;
-	}
-
-	AllocatedClass& operator=(const AllocatedClass& rhs) {
-		delete[] data;
-		data = new char[10];
-		x = rhs.x;
-		return *this;
-	}
-
-	~AllocatedClass() {
-		delete [] data;
-	}
-
-private:
-	char* data;
-	int x;
-
-};
-
-#include "containers/map.hpp"
-#include <map>
-
 #ifndef USING_CATCH
 int main() {
 
-	// srand(time(NULL));
-	// Testing::Benchmarking();
-
-	AllocatedClass a;
-
-	ft::map<int, AllocatedClass> m;
-
-	m[1] = a;
-
+	srand(time(NULL));
+	Testing::Benchmarking();
 
 	return 0;
 }
