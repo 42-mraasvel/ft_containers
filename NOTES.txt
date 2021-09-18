@@ -158,7 +158,6 @@ Red-Black Trees
 			root = black;
 		}
 
-
 Tree Structure
 
 	Types:

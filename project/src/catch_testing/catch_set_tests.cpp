@@ -336,6 +336,112 @@ TEST_CASE("set erase range", "[set]") {
 	REQUIRE(s.size() == 75);
 }
 
+TEST_CASE("Red-Black erase case 0", "[red-black]") {
+	NS::set<int> m;
+
+	for (int i = 0; i < 6; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(4);
+
+	for (int i = 0; i < 10000; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(m.begin(), m.end());
+
+	m.insert(42);
+
+	REQUIRE(m.size() == 1);
+}
+
+TEST_CASE("Red-Black erase case 1", "[red-black]") {
+	NS::set<int> m;
+
+	for (int i = 0; i < 10; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(4);
+
+	for (int i = 0; i < 10000; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(m.begin(), m.end());
+
+	m.insert(42);
+
+	REQUIRE(m.size() == 1);
+}
+
+TEST_CASE("Red-Black erase case 2", "[red-black]") {
+	NS::set<int> m;
+
+	for (int i = 0; i < 8; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(1);
+
+	for (int i = 0; i < 10000; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(m.begin(), m.end());
+
+	m.insert(42);
+
+	REQUIRE(m.size() == 1);
+}
+
+TEST_CASE("Red-Black erase case 3", "[red-black]") {
+	NS::set<int> m;
+
+	for (int i = 0; i < 16; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(2);
+	m.erase(1);
+	m.erase(5);
+	m.insert(5);
+	m.erase(6);
+
+	m.erase(0);
+
+	for (int i = 0; i < 10000; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(m.begin(), m.end());
+
+	m.insert(42);
+
+	REQUIRE(m.size() == 1);
+}
+
+TEST_CASE("Red-Black erase case 4", "[red-black]") {
+	NS::set<int> m;
+
+	for (int i = 0; i < 6; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(3);
+
+	for (int i = 0; i < 10000; ++i) {
+		m.insert(i);
+	}
+
+	m.erase(m.begin(), m.end());
+	m.insert(42);
+
+	REQUIRE(m.size() == 1);
+}
+
+
 TEST_CASE("set swap", "[set]") {
 	NS::set<int> s;
 	NS::set<int> s2;
