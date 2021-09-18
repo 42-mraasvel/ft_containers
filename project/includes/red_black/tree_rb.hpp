@@ -269,6 +269,10 @@ private:
 			_max_ptr = _M_find_max(base());
 		}
 
+		_M_destroy_node_no_reassign(x);
+	}
+
+	void _M_destroy_node_no_reassign(node_pointer x) {
 		_alloc.destroy(x);
 		_alloc.deallocate(x, 1);
 	}
@@ -781,7 +785,7 @@ private:
 
 		_M_clear(x->left);
 		_M_clear(x->right);
-		_M_destroy_node(x);
+		_M_destroy_node_no_reassign(x);
 	}
 
 /* End Pointer Management */

@@ -415,3 +415,17 @@ TEST_CASE("map relational operators", "[map]") {
 	REQUIRE(!(alice > eve));
 	REQUIRE(alice >= eve);
 }
+
+/*
+Some other type testing
+*/
+
+TEST_CASE("map type test", "[map]") {
+	NS::map<std::string, int> m;
+
+	m["HELLO"] = 0;
+	m["hello"] = 42;
+	REQUIRE(m["HELLO"] == 0);
+	REQUIRE(m["hello"] == 42);
+	REQUIRE(m.size() == 2);
+}

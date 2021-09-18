@@ -9,7 +9,7 @@ $(NAME): $(OBJ)
 	$(CXX) -o $@ $(OBJ)
 $(OBJ): $(ODIR)/%.o: $(SDIR)/%.cpp Makefile
 	@mkdir -p $(@D)
-	$(CXX) -c -o $@ $< $(CXXFLAGS) $(IFLAGS)
+	$(CXX) -c -o $@ $< $(CXXFLAGS) $(IFLAGS) -g3
 $(DDIR)/%.d: $(SDIR)/%.cpp
 	@mkdir -p $(@D)
 	@$(CXX) $< -MM -MF $@ -MT $(ODIR)/$*.o $(CXXFLAGS) $(IFLAGS)
