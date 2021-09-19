@@ -449,7 +449,9 @@ TEST_CASE("vector swap", "[vector]") {
 	NS::vector<int> v(3, 100);
 	NS::vector<int> v2(5, 200);
 
+	NS::vector<int>::iterator it = v.begin();
 	v.swap(v2);
+	REQUIRE(it == v2.begin()); // iterator validity
 	REQUIRE(v.size() == 5);
 	REQUIRE(v.capacity() == 5);
 	REQUIRE(v2.size() == 3);

@@ -1,13 +1,18 @@
 ifndef SETTINGS_MK
 SETTINGS_MK = 1
 
+DEF_EXEC = a.out
+CATCH_EXEC = catch.exe
+CATCH_STD_EXEC = catch_std.exe
+EXECS = $(DEF_EXEC) $(CATCH_EXEC) $(CATCH_STD_EXEC)
+
 ifdef USING_CATCH
-	NAME = catch.exe
+	NAME = $(CATCH_EXEC)
 	ifdef USING_STD
-		NAME = catch_std.exe
+		NAME = $(CATCH_STD_EXEC)
 	endif # USING_CATCH
 else
-	NAME = a.out
+	NAME = $(DEF_EXEC)
 endif # USING_CATCH
 
 

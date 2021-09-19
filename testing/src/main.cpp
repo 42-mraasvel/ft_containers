@@ -3,6 +3,7 @@
 #include "FakeAllocator.hpp"
 
 #include "containers/vector.hpp"
+#include "containers/set.hpp"
 #include "reimplemented/iterator_traits.hpp"
 #include "reimplemented/allocator_traits.hpp"
 #include "utils/is_allocator.hpp"
@@ -22,14 +23,11 @@
 
 int main() {
 
-	std::multimap<int, int> m;
+	ft::set<int> s;
 
-	m.insert(std::make_pair(1, 42));
-	m.insert(std::make_pair(1, 69));
-
-	auto it = m.find(1);
-
-	std::cout << it->second << std::endl;
+	std::cout << s.size() << std::endl;
+	s.insert(s.end(), 1);
+	std::cout << s.size() << std::endl;
 
 	return 0;
 }

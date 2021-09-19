@@ -18,7 +18,7 @@ $(DDIR)/%.d: $(SDIR)/%.cpp
 clean:
 	$(RM) -r $(ODIR)
 fclean: clean
-	$(RM) $(NAME)
+	$(RM) $(EXECS)
 	$(RM) -r $(DDIR)
 re: fclean
 	$(MAKE) all

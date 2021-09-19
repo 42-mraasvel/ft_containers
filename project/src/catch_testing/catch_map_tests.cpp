@@ -429,3 +429,12 @@ TEST_CASE("map type test", "[map]") {
 	REQUIRE(m["hello"] == 42);
 	REQUIRE(m.size() == 2);
 }
+
+TEST_CASE("map iterator comparisons", "[map]") {
+	NS::map<std::string, int> m1;
+	const NS::map<std::string, int> m2;
+
+	NS::map<std::string, int>::iterator it = m1.begin();
+	NS::map<std::string, int>::const_iterator it2 = m2.begin();
+	REQUIRE(it != it2);
+}
