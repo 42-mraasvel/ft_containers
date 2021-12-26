@@ -2,8 +2,8 @@ ifndef SETTINGS_MK
 SETTINGS_MK = 1
 
 DEF_EXEC = a.out
-CATCH_EXEC = catch.exe
-CATCH_STD_EXEC = catch_std.exe
+CATCH_EXEC = catch.out
+CATCH_STD_EXEC = catch_std.out
 EXECS = $(DEF_EXEC) $(CATCH_EXEC) $(CATCH_STD_EXEC)
 
 ifdef USING_CATCH

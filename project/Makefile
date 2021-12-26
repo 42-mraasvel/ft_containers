@@ -2,7 +2,8 @@ include make_settings/src_files.mk
 include make_settings/settings.mk
 
 .PHONY: all
-all: $(NAME)
+all:
+	$(MAKE) $(NAME) -j
 
 # Compilation
 $(NAME): $(OBJ)

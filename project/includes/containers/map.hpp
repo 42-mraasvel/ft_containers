@@ -186,11 +186,11 @@ public:
 /* Observers */
 
 	key_compare key_comp() const {
-		return _tree.comp_object().comp_object();
+		return _tree.value_comp().comp_object();
 	}
 
 	value_compare value_comp() const {
-		return _tree.comp_object();
+		return _tree.value_comp();
 	}
 
 /* Operations */

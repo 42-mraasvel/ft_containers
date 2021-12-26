@@ -438,3 +438,16 @@ TEST_CASE("map iterator comparisons", "[map]") {
 	NS::map<std::string, int>::const_iterator it2 = m2.begin();
 	REQUIRE(it != it2);
 }
+
+TEST_CASE("map other", "[map]") {
+	NS::map<char, char> m;
+
+	{
+		auto x = m.key_comp();
+		auto y = m.value_comp();
+		auto z = m.get_allocator();
+		(void)x;
+		(void)y;
+		(void)z;
+	}
+}
