@@ -14,4 +14,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: make
-      run: cd project && make && ./run.sh catch
+      run: cd project && ./run.sh catch
